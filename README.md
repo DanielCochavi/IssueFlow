@@ -183,7 +183,7 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 
 For the full local runbook, see `run.md`.
 
-On macOS, make sure Docker Desktop is installed and running before starting PostgreSQL.
+Make sure Docker is installed and the Docker daemon is running before starting PostgreSQL.
 
 Start PostgreSQL:
 

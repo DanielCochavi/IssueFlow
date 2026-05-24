@@ -4,9 +4,9 @@ This file is the local setup, build, run, and test runbook for the IssueFlow bac
 
 ## Prerequisites
 
-- Java 21 is required.
-- Docker Desktop must be installed and running.
-- Maven does not need to be installed separately because this repository includes the Maven wrapper (`./mvnw`).
+- Java 21
+- Docker with Docker Compose
+- Maven does not need to be installed separately because the repository includes the Maven wrapper (`./mvnw`)
 
 ## Start PostgreSQL
 
@@ -18,7 +18,7 @@ docker compose version
 docker info
 ```
 
-On macOS, start Docker Desktop before running Compose.
+If `docker info` fails, start Docker Desktop on macOS or Windows, or start the Docker service on Linux, then rerun the command.
 
 ```bash
 docker compose up -d
