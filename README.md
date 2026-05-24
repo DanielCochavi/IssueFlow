@@ -203,12 +203,6 @@ Run the application:
 ./mvnw spring-boot:run
 ```
 
-Run the packaged jar:
-
-```bash
-java -jar target/issueflow-*.jar
-```
-
 Test the application:
 
 ```bash
