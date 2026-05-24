@@ -560,3 +560,47 @@ Codex was instructed to implement only the auto-escalation scheduler and service
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, scheduler behavior, idempotency expectations, audit expectations, and ticket update behavior.
+
+## Step 13 — Final Documentation and Verification
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Completed the final README documentation pass required for submission.
+- Added the approved architecture diagram asset under `docs/architecture/IssueFlowPlatform.png`.
+- Embedded the diagram in `README.md` under `Project System Design Diagram`.
+- Updated `run.md` as the local setup, build, run, test, and stop-services runbook.
+- Preserved the README API tables as the visible implementation contract while aligning surrounding notes with completed behavior.
+
+### Engineering Intent
+
+- Make final documentation describe the implemented backend rather than an in-progress step.
+- Document the single Spring Boot application as logical service/module boundaries, not physical microservices.
+- Keep local setup commands concise and reproducible.
+- Keep secrets documented as development-only placeholders.
+- Avoid documenting unsupported endpoints or future work as complete.
+
+### Prompt Summary
+
+Codex was instructed to finalize repository documentation, add the approved `IssueFlowPlatform.png` system design diagram, update README and runbook content, preserve package and assignment conventions, avoid new implementation features, and verify the repository with Maven.
+
+### Key Design Decisions
+
+- Use the provided diagram exactly as supplied instead of generating Mermaid or a replacement image.
+- Keep `AGENTS.md` and the IssueFlow skill unchanged because their README, documentation, package, and comment policies were already aligned.
+- Keep README manual test flows short and focused on implemented auth, project, ticket, comment mention, and CSV export behavior.
+- Keep `run.md` practical and avoid duplicating the full README API contract.
+
+### Scope Control
+
+- No application source code, endpoint behavior, package structure, Swagger/OpenAPI setup, bootstrap data, seed data, smoke-test scripts, helper scripts, or extra Maven modules were added in this final documentation step.
+
+### Validation and Testing
+
+- Final verification used `./mvnw clean verify`.
+- Documentation was reviewed to ensure README and runbook content do not contradict the implemented API behavior.
+
+### Ownership Note
+
+- The final documentation was reviewed against the TDP assignment guardrails provided in the prompt, the README API contract, existing package conventions, generated prompt history, local runbook expectations, and repository submission requirements.

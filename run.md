@@ -1,10 +1,12 @@
 # IssueFlow – Ticket Management Backend Platform Run Guide
 
+This file is the local setup, build, run, and test runbook for the IssueFlow backend.
+
 ## Prerequisites
 
 - Java 21
 - Docker and Docker Compose
-- Maven wrapper included in this repository
+- Maven wrapper included in this repository (`./mvnw`)
 
 ## Start PostgreSQL
 
@@ -12,7 +14,7 @@
 docker compose up -d
 ```
 
-The local database uses the development-only credentials from `compose.yml` and `src/main/resources/application.yaml`.
+The local PostgreSQL service is defined in `compose.yml` and listens on `localhost:5432`.
 
 ## Build
 
@@ -32,7 +34,7 @@ mvnw.cmd clean verify
 ./mvnw test
 ```
 
-For the same verification used before handoff:
+Use the full verification command before handoff:
 
 ```bash
 ./mvnw clean verify
@@ -44,22 +46,28 @@ For the same verification used before handoff:
 ./mvnw spring-boot:run
 ```
 
-The application runs on `http://localhost:8080`.
+The API runs at:
 
-## Local API Flow
+```text
+http://localhost:8080
+```
 
-Create a user. `password` is accepted by the implementation so login can validate credentials.
+## Configuration Notes
+
+- Production profile management is not part of this assignment repository.
+- Local database settings live in `src/main/resources/application.yaml`.
+- Test database settings live in `src/test/resources/application.yaml` and use H2.
+- The local JWT signing secret and PostgreSQL password are development-only placeholders and must be changed or externalized before deployment.
+- The escalation scheduler is enabled by default for the application and disabled in tests.
+
+## Local API Usage
+
+Create a user. The implementation accepts `password` on `POST /users` so login can validate credentials.
 
 ```bash
 curl -X POST http://localhost:8080/users \
   -H "Content-Type: application/json" \
-  -d '{
-    "username": "jdoe",
-    "email": "jdoe@example.com",
-    "fullName": "John Doe",
-    "role": "DEVELOPER",
-    "password": "secret"
-  }'
+  -d '{"username":"jdoe","email":"jdoe@example.com","fullName":"John Doe","role":"DEVELOPER","password":"secret"}'
 ```
 
 Login and copy the returned `accessToken`.
@@ -67,111 +75,97 @@ Login and copy the returned `accessToken`.
 ```bash
 curl -X POST http://localhost:8080/auth/login \
   -H "Content-Type: application/json" \
-  -d '{ "username": "jdoe", "password": "secret" }'
+  -d '{"username":"jdoe","password":"secret"}'
+
+TOKEN="<accessToken from login>"
 ```
 
-Call authenticated endpoints with `Authorization: Bearer <token>`.
+Call authenticated endpoints with the JWT.
 
 ```bash
 curl http://localhost:8080/auth/me \
-  -H "Authorization: Bearer <token>"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-Create a project using the created user's `id` as `ownerId`.
+Create a project and ticket.
 
 ```bash
 curl -X POST http://localhost:8080/projects \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Sample Project",
-    "description": "A sample project",
-    "ownerId": 1
-  }'
+  -d '{"name":"Sample Project","description":"A sample project","ownerId":1}'
+
+curl -X POST http://localhost:8080/tickets \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Fix login bug","description":"Login fails for valid users","status":"TODO","priority":"HIGH","type":"BUG","projectId":1,"dueDate":"2026-04-01T00:00:00Z"}'
 ```
 
-Fetch active projects.
+Fetch active projects and tickets.
 
 ```bash
 curl http://localhost:8080/projects \
-  -H "Authorization: Bearer <token>"
-```
+  -H "Authorization: Bearer $TOKEN"
 
-Create a ticket for the project.
-
-```bash
-curl -X POST http://localhost:8080/tickets \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Fix login bug",
-    "description": "Login fails for valid users",
-    "status": "TODO",
-    "priority": "HIGH",
-    "type": "BUG",
-    "projectId": 1,
-    "assigneeId": 1,
-    "dueDate": "2026-04-01T00:00:00Z"
-  }'
-```
-
-Fetch active tickets for a project.
-
-```bash
 curl "http://localhost:8080/tickets?projectId=1" \
-  -H "Authorization: Bearer <token>"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-After creating two tickets in the same project, add, list, and remove a dependency.
-
-```bash
-curl -X POST http://localhost:8080/tickets/1/dependencies \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{ "blockedBy": 2 }'
-
-curl http://localhost:8080/tickets/1/dependencies \
-  -H "Authorization: Bearer <token>"
-
-curl -X DELETE http://localhost:8080/tickets/1/dependencies/2 \
-  -H "Authorization: Bearer <token>"
-```
-
-Add and list comments for a ticket. Mentioned users are matched by `@username`.
+Add a comment with a mention and fetch mentions for the user.
 
 ```bash
 curl -X POST http://localhost:8080/tickets/1/comments \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{ "authorId": 1, "content": "Please review this @jdoe" }'
+  -d '{"authorId":1,"content":"Please review this @jdoe"}'
 
-curl http://localhost:8080/tickets/1/comments \
-  -H "Authorization: Bearer <token>"
+curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-Fetch comments where a user was mentioned.
+Export tickets to CSV.
 
 ```bash
-curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
-  -H "Authorization: Bearer <token>"
+curl "http://localhost:8080/tickets/export?projectId=1" \
+  -H "Authorization: Bearer $TOKEN" \
+  -o tickets-project-1.csv
 ```
 
-Upload and delete an attachment for a ticket.
+Import tickets from CSV.
+
+```bash
+curl -X POST http://localhost:8080/tickets/import \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "projectId=1" \
+  -F "file=@./tickets-project-1.csv;type=text/csv"
+```
+
+Upload and delete an attachment.
 
 ```bash
 curl -X POST http://localhost:8080/tickets/1/attachments \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer $TOKEN" \
   -F "file=@./screenshot.png;type=image/png"
 
 curl -X DELETE http://localhost:8080/tickets/1/attachments/1 \
-  -H "Authorization: Bearer <token>"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-Fetch audit logs for recorded actions.
+Fetch audit logs.
 
 ```bash
-curl "http://localhost:8080/audit-logs?entityType=PROJECT" \
-  -H "Authorization: Bearer <token>"
+curl "http://localhost:8080/audit-logs?entityType=TICKET" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-The local JWT signing secret is development-only and must be externalized before deployment.
+## Stop Local Services
+
+```bash
+docker compose down
+```
+
+To remove the local PostgreSQL volume as well:
+
+```bash
+docker compose down -v
+```

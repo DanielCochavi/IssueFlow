@@ -6,11 +6,11 @@
 
 ## Overview
 IssueFlow is a backend service designed to handle a lightweight project and issue tracking platform.
-The system manages users, projects, tickets (issues), comments on tickets, audit logs, ticket dependencies, attachments, and bulk ticket import/export.
+The system manages users, projects, tickets, comments, audit logs, ticket dependencies, attachments, mentions, workload reporting, automatic assignment, automatic escalation, soft delete and restore, and bulk ticket import/export.
 
 ## Implementation Status
 
-This repository is implemented incrementally. The API tables below remain the assignment contract. Final setup, run, manual test flows, and architecture documentation will be completed in the final documentation step.
+This repository contains the completed IssueFlow backend implementation for the assignment API contract below. It is a single Spring Boot application with logical service boundaries for authentication, users, projects, tickets, comments, audit logs, dependencies, attachments, CSV import/export, mentions, workload, auto-assignment, and auto-escalation.
 
 ## Functionality
 The system provides the following APIs:
@@ -26,13 +26,23 @@ The system provides the following APIs:
 - **Soft Delete API**: Tickets and projects are soft-deleted and can be restored by ADMIN users.
 - **Mentions API**: `@username` mentions in comments are validated, persisted, and retrievable per user.
 - **Auto-Escalation**: A background scheduler automatically escalates ticket priority when a `dueDate` is exceeded.
-- **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER in the project.
+- **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER by project workload.
 
 ## Technical Aspects
-The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development.
+The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development. The application uses Spring Data JPA/Hibernate for persistence, Spring Security with JWT for authentication, BCrypt password hashing, Jakarta Bean Validation, centralized error handling, optimistic locking through JPA `@Version`, and focused automated tests.
 
-## Homework Task
-Candidates are expected to design and implement the above APIs, adhering to RESTful principles, including input validation, proper error handling, and relevant tests.
+All endpoints require JWT authentication except `POST /users` and `POST /auth/login`. The local JWT signing secret and database password are development-only values and must be changed or externalized before deployment.
+
+## Project System Design Diagram
+
+![IssueFlow Backend Platform system design diagram](docs/architecture/IssueFlowPlatform.png)
+
+The diagram shows microservices-style logical architecture implemented inside a single Spring Boot application. Client/UI calls the backend through JWT-authenticated REST APIs. The Spring Boot backend contains logical modules for auth, users, projects, tickets, comments, audit logs, dependencies, attachments, workload, auto-assignment, CSV import/export, mentions, and auto-escalation.
+
+PostgreSQL stores all application data, including users, projects, tickets, comments, mentions, dependencies, attachments, and audit logs. The escalation scheduler runs inside the application and updates overdue tickets. Auto-assignment runs during ticket creation when `assigneeId` is omitted. The API tables below remain authoritative for the exposed REST endpoints.
+
+## Assignment Scope
+The backend implements the assignment APIs with RESTful endpoints, request validation, consistent error handling, security where required, persistence, auditability, and automated tests.
 
 ---
 
@@ -44,7 +54,7 @@ Candidates are expected to design and implement the above APIs, adhering to REST
 |----------------------|-----------------------------|-------------------------------------------------------------------------------------------------------|-----------------|----------------------------------------------------------------------------------------------------------------------|
 | Get all users        | GET /users                  |                                                                                                       | 200 OK          | `[ { "id": 1, "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" } ]`    |
 | Get user by ID       | GET /users/:userId          |                                                                                                       | 200 OK          | `{ "id": 1, "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" }`        |
-| Create a user        | POST /users                 | `{ "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" }`   | 200 OK          | `{ "id": 1, "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" }`        |
+| Create a user        | POST /users                 | `{ "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER", "password": "secret" }` | 200 OK | `{ "id": 1, "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" }`        |
 | Update a user        | POST /users/update/:userId  | `{ "fullName": "Jane Doe", "role": "ADMIN" }`                                                         | 200 OK          |                                                                                                                      |
 | Delete a user        | DELETE /users/:userId       |                                                                                                       | 200 OK          |                                                                                                                      |
 ---
@@ -54,7 +64,7 @@ Candidates are expected to design and implement the above APIs, adhering to REST
 |-------------------------|------------------|-------------------------------------------------------|-----------------|---------------|
 | Login (obtain JWT)      | POST /auth/login | `{ "username": "jdoe", "password": "secret" }`       | 200 OK          | `{ "accessToken": "<jwt>", "tokenType": "Bearer", "expiresIn": 3600 }` |
 | Logout (invalidate token) | POST /auth/logout |                                                     | 200 OK          | |
-| Get current user        | GET /auth/me     |    
+| Get current user        | GET /auth/me     |                                                       | 200 OK          | `{ "id": 1, "username": "jdoe", "email": "jdoe@example.com", "fullName": "John Doe", "role": "DEVELOPER" }` |
 
 ---
 
@@ -159,34 +169,109 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 
 ---
 
-## Jump Start
-For your convenience, `compose.yml` includes a PostgreSQL database for local development.
+## Implementation Notes
 
-Document your exact setup, build, and run steps in `run.md` (install dependencies, start the database, build the project, run the application, and run the tests).
+- `POST /users` accepts `password` so the authentication flow can validate `POST /auth/login`. Passwords are stored only as BCrypt hashes and are never returned in responses.
+- The application uses a stateless JWT security model. `POST /users` and `POST /auth/login` are public; all other endpoints require `Authorization: Bearer <token>`.
+- Projects and tickets use soft delete. Standard read endpoints hide deleted records, and restore/list-deleted endpoints are ADMIN-only.
+- Ticket lifecycle is forward-only: `TODO -> IN_PROGRESS -> IN_REVIEW -> DONE`. DONE tickets cannot be updated, and a ticket cannot move to DONE while it has unresolved blockers.
+- Audit logs are persisted for state-changing user, project, ticket, dependency, comment, attachment, import, auto-assignment, and auto-escalation actions.
+- There is no separate project membership model. Workload and auto-assignment consider all users with role `DEVELOPER`, counting their non-deleted, non-DONE tickets in the requested project.
+- The auto-escalation scheduler runs in the application. It escalates overdue unresolved tickets one priority level per cycle and marks CRITICAL overdue tickets with `isOverdue=true`.
 
-## Description
+## Local Development
 
-[Spring Boot](https://spring.io/projects/spring-boot) Java starter project. Supports **Java 21** with **Spring Boot 3.4.2**.
+For the full local runbook, see `run.md`.
 
-## Build
+Start PostgreSQL:
 
 ```bash
-# using Maven wrapper
-$ ./mvnw clean verify
+docker compose up -d
 ```
 
-## Running the app
+Build and run all tests:
 
 ```bash
-# run with Maven
-$ ./mvnw spring-boot:run
+./mvnw clean verify
 ```
 
-## Test
+Run the application:
 
 ```bash
-# run all tests (Maven)
-$ ./mvnw clean verify
+./mvnw spring-boot:run
+```
+
+Stop PostgreSQL:
+
+```bash
+docker compose down
+```
+
+## Manual Test Flows
+
+The examples below assume the application is running on `http://localhost:8080`.
+
+### Flow 1: Auth, Project, Ticket
+
+Create a user:
+
+```bash
+curl -X POST http://localhost:8080/users \
+  -H "Content-Type: application/json" \
+  -d '{"username":"jdoe","email":"jdoe@example.com","fullName":"John Doe","role":"DEVELOPER","password":"secret"}'
+```
+
+Login and set the returned token:
+
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"jdoe","password":"secret"}'
+
+TOKEN="<accessToken from login>"
+```
+
+Create a project and ticket:
+
+```bash
+curl -X POST http://localhost:8080/projects \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Sample Project","description":"A sample project","ownerId":1}'
+
+curl -X POST http://localhost:8080/tickets \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Fix login bug","description":"Login fails for valid users","status":"TODO","priority":"HIGH","type":"BUG","projectId":1,"dueDate":"2026-04-01T00:00:00Z"}'
+```
+
+Fetch tickets for the project:
+
+```bash
+curl "http://localhost:8080/tickets?projectId=1" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Flow 2: Comment Mention and CSV Export
+
+Add a comment with a mention and fetch mentions:
+
+```bash
+curl -X POST http://localhost:8080/tickets/1/comments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"authorId":1,"content":"Please review this @jdoe"}'
+
+curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Export project tickets to CSV:
+
+```bash
+curl "http://localhost:8080/tickets/export?projectId=1" \
+  -H "Authorization: Bearer $TOKEN" \
+  -o tickets-project-1.csv
 ```
 
 ## AI & Agents
