@@ -1,16 +1,16 @@
 package com.att.tdp.issueflow.entity;
 
+import java.time.Instant;
+
 import com.att.tdp.issueflow.enums.AuditAction;
 import com.att.tdp.issueflow.enums.AuditActor;
-import com.att.tdp.issueflow.enums.EntityType;
+import com.att.tdp.issueflow.enums.AuditEntityType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,18 +27,24 @@ public class AuditLog extends RecordBase {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private EntityType entityType;
+	private AuditEntityType entityType;
 
 	private Long entityId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "performed_by_id")
-	private User performedBy;
+	// Store the actor id as a scalar so audit history survives user deletion.
+	private Long performedBy;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private AuditActor actor;
 
-	@Column(columnDefinition = "TEXT")
-	private String details;
+	@Column(nullable = false, updatable = false)
+	private Instant timestamp;
+
+	@PrePersist
+	void setTimestampOnCreate() {
+		if (timestamp == null) {
+			timestamp = Instant.now();
+		}
+	}
 }

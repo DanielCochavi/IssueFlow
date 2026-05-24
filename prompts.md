@@ -173,3 +173,46 @@ Codex was instructed to implement only Project CRUD and project soft-delete/rest
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, security expectations, validation behavior, and package conventions.
+
+## Step 5 — Audit Log Foundation
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the persistent append-only audit log foundation required by the assignment.
+- Added audit recording for existing state-changing User and Project operations.
+- Implemented the README `GET /audit-logs` endpoint with optional `entityType`, `entityId`, `action`, and `actor` filters.
+
+### Engineering Intent
+
+- Centralize audit writes and reads in `AuditLogService`.
+- Store `performedBy` as a scalar user id so audit history remains stable if a user is later deleted.
+- Use a reusable user/system actor model for current and future manual or automated actions.
+- Integrate audit logging with existing User and Project state changes before adding ticket/comment/automation features.
+- Cover both audit write behavior and read/filter behavior with integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement the audit foundation before future ticket, comment, dependency, attachment, import/export, and automation features so audit behavior does not need to be retrofitted later.
+
+### Key Design Decisions
+
+- Use an append-only audit entity exposed only through a read endpoint.
+- Use enum-based action, entity type, and actor fields.
+- Store `performedBy` as `Long` instead of a `User` foreign key.
+- Provide a filterable `GET /audit-logs` endpoint sorted newest first.
+- Save audit records in the same transaction as the state-changing operation where practical.
+
+### Scope Control
+
+- Tickets, comments, dependencies, attachments, import/export, workload, auto-assignment, and auto-escalation were not implemented in this step.
+
+### Validation and Testing
+
+- Audit integration tests cover user create/update audit writes, project create/update/delete/restore audit writes, authentication requirements, newest-first ordering, filters, and response field safety.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, and audit traceability expectations.

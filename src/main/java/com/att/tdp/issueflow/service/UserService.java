@@ -10,6 +10,8 @@ import com.att.tdp.issueflow.dto.CreateUserRequest;
 import com.att.tdp.issueflow.dto.UpdateUserRequest;
 import com.att.tdp.issueflow.dto.UserResponse;
 import com.att.tdp.issueflow.entity.User;
+import com.att.tdp.issueflow.enums.AuditAction;
+import com.att.tdp.issueflow.enums.AuditEntityType;
 import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
 import com.att.tdp.issueflow.repository.UserRepository;
@@ -22,9 +24,15 @@ public class UserService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	private final AuditLogService auditLogService;
+
+	public UserService(
+			UserRepository userRepository,
+			PasswordEncoder passwordEncoder,
+			AuditLogService auditLogService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.auditLogService = auditLogService;
 	}
 
 	public List<UserResponse> getUsers() {
@@ -58,7 +66,13 @@ public class UserService {
 		// User creation accepts a password so /auth/login can validate credentials; only the BCrypt hash is stored.
 		user.setPasswordHash(passwordEncoder.encode(request.password()));
 
-		return toResponse(userRepository.save(user));
+		User savedUser = userRepository.save(user);
+		auditLogService.recordUserAction(
+				AuditAction.CREATE,
+				AuditEntityType.USER,
+				savedUser.getId(),
+				savedUser.getId());
+		return toResponse(savedUser);
 	}
 
 	@Transactional
@@ -66,11 +80,13 @@ public class UserService {
 		User user = getRequiredUser(userId);
 		user.setFullName(normalize(request.fullName()));
 		user.setRole(request.role());
+		auditLogService.recordCurrentUserAction(AuditAction.UPDATE, AuditEntityType.USER, user.getId());
 	}
 
 	@Transactional
 	public void deleteUser(Long userId) {
 		User user = getRequiredUser(userId);
+		auditLogService.recordCurrentUserAction(AuditAction.DELETE, AuditEntityType.USER, user.getId());
 		userRepository.delete(user);
 	}
 

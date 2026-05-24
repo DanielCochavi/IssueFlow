@@ -97,4 +97,11 @@ curl http://localhost:8080/projects \
   -H "Authorization: Bearer <token>"
 ```
 
+Fetch audit logs for recorded user and project actions.
+
+```bash
+curl "http://localhost:8080/audit-logs?entityType=PROJECT" \
+  -H "Authorization: Bearer <token>"
+```
+
 The local JWT signing secret is development-only and must be externalized before deployment.

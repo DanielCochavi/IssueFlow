@@ -10,6 +10,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -56,6 +57,13 @@ public class GlobalExceptionHandler {
 			HttpMessageNotReadableException exception,
 			HttpServletRequest request) {
 		return buildResponse(HttpStatus.BAD_REQUEST, "Invalid request body", request);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleTypeMismatch(
+			MethodArgumentTypeMismatchException exception,
+			HttpServletRequest request) {
+		return buildResponse(HttpStatus.BAD_REQUEST, "Invalid request parameter", request);
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)

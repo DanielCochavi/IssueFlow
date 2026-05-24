@@ -11,6 +11,8 @@ import com.att.tdp.issueflow.dto.ProjectResponse;
 import com.att.tdp.issueflow.dto.UpdateProjectRequest;
 import com.att.tdp.issueflow.entity.Project;
 import com.att.tdp.issueflow.entity.User;
+import com.att.tdp.issueflow.enums.AuditAction;
+import com.att.tdp.issueflow.enums.AuditEntityType;
 import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
 import com.att.tdp.issueflow.repository.ProjectRepository;
@@ -24,9 +26,15 @@ public class ProjectService {
 
 	private final UserRepository userRepository;
 
-	public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
+	private final AuditLogService auditLogService;
+
+	public ProjectService(
+			ProjectRepository projectRepository,
+			UserRepository userRepository,
+			AuditLogService auditLogService) {
 		this.projectRepository = projectRepository;
 		this.userRepository = userRepository;
+		this.auditLogService = auditLogService;
 	}
 
 	public List<ProjectResponse> getProjects() {
@@ -51,7 +59,9 @@ public class ProjectService {
 		project.setOwner(owner);
 		project.setDeleted(false);
 
-		return toResponse(projectRepository.save(project));
+		Project savedProject = projectRepository.save(project);
+		auditLogService.recordCurrentUserAction(AuditAction.CREATE, AuditEntityType.PROJECT, savedProject.getId());
+		return toResponse(savedProject);
 	}
 
 	@Transactional
@@ -73,6 +83,8 @@ public class ProjectService {
 		if (request.description() != null) {
 			project.setDescription(normalize(request.description()));
 		}
+
+		auditLogService.recordCurrentUserAction(AuditAction.UPDATE, AuditEntityType.PROJECT, project.getId());
 	}
 
 	@Transactional
@@ -81,6 +93,7 @@ public class ProjectService {
 		// Projects are soft-deleted per assignment requirements; normal reads exclude deleted rows.
 		project.setDeleted(true);
 		project.setDeletedAt(Instant.now());
+		auditLogService.recordCurrentUserAction(AuditAction.DELETE, AuditEntityType.PROJECT, project.getId());
 	}
 
 	public List<ProjectResponse> getDeletedProjects() {
@@ -95,6 +108,7 @@ public class ProjectService {
 		Project project = getDeletedProject(projectId);
 		project.setDeleted(false);
 		project.setDeletedAt(null);
+		auditLogService.recordCurrentUserAction(AuditAction.RESTORE, AuditEntityType.PROJECT, project.getId());
 	}
 
 	private Project getActiveProject(Long projectId) {
