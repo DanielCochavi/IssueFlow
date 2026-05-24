@@ -418,3 +418,52 @@ Codex was instructed to implement only attachment upload and delete behavior for
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, attachment validation rules, audit expectations, and security behavior.
+
+## Step 10 — Ticket CSV Export and Import
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the README Ticket CSV export endpoint: `GET /tickets/export?projectId={id}`.
+- Implemented the README Ticket CSV import endpoint: `POST /tickets/import` with multipart `file` and `projectId` form fields.
+- Export returns non-deleted tickets for an active project with the required fields: `id`, `title`, `description`, `status`, `priority`, `type`, and `assigneeId`.
+- Import validates the target project, parses the required headers, ignores CSV ids, validates row values, continues past row-level failures, and returns the required created/failed/errors summary.
+- Successful imported rows write ticket audit records with `IMPORT_TICKETS`.
+
+### Engineering Intent
+
+- Keep CSV-specific parsing, escaping, validation, and import summary behavior in `TicketCsvService`.
+- Use Apache Commons CSV for both export and import so commas and quotes are handled consistently.
+- Keep the existing Ticket API and lifecycle behavior intact while adding focused import/export endpoints.
+- Treat export as read-only and import as state-changing.
+- Keep row-level import failures isolated so valid rows are still created.
+- Verify behavior with focused MockMvc integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement only Ticket CSV export/import using the existing ticket, project, user, repository, security, and audit infrastructure while deferring workload, automation, final README documentation, architecture diagrams, and helper scripts.
+
+### Key Design Decisions
+
+- Reuse existing `Ticket`, `TicketRepository`, `ProjectRepository`, `UserRepository`, and audit infrastructure.
+- Add `TicketImportSummaryResponse` for the README import response shape.
+- Add export/import mappings to the existing `TicketController` instead of introducing a separate controller or domain package.
+- Validate active project before export or import.
+- Ignore incoming CSV ids and let the database generate ticket ids.
+- Allow blank `assigneeId` to import unassigned tickets.
+- Require provided `assigneeId` values to reference an existing user.
+- Audit only successfully imported rows and avoid storing CSV content in audit logs.
+
+### Scope Control
+
+- Workload API, auto-assignment, auto-escalation, final README documentation, architecture diagram updates, attachment download/list endpoints, Swagger/OpenAPI, bootstrap data, and smoke-test scripts were not implemented in this step.
+
+### Validation and Testing
+
+- `TicketCsvIntegrationTest` covers JWT protection, CSV export headers, deleted-ticket exclusion, comma/quote escaping, missing/deleted project validation, valid imports, ignored CSV ids, blank assignees, row-level failures, malformed/missing-header/missing-file validation, and import audit writes.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, CSV escaping expectations, validation behavior, audit expectations, and security behavior.
