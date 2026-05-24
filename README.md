@@ -216,9 +216,9 @@ Stop PostgreSQL:
 docker compose down
 ```
 
-## Example Functionality Test Flows
+## Core API Flows
 
-The examples below assume the application is running on `http://localhost:8080`.
+The examples below show common curl-based flows for using the main IssueFlow APIs after the application is running.
 
 ```bash
 BASE_URL=http://localhost:8080
@@ -229,7 +229,7 @@ TICKET_ID=1
 BLOCKER_TICKET_ID=2
 ```
 
-### Example User Login Test Flow
+### User Registration and Login Flow
 
 Purpose: create a user, login, and call the current-user endpoint with a JWT.
 
@@ -248,7 +248,7 @@ curl "$BASE_URL/auth/me" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-### Example Project and Ticket Lifecycle Flow
+### Project and Ticket Lifecycle Flow
 
 Purpose: create a project, create a ticket, move it forward one lifecycle step, and fetch project tickets.
 
@@ -274,7 +274,7 @@ curl "$BASE_URL/tickets?projectId=$PROJECT_ID" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-### Example Collaboration and Extended Features Flow
+### Comments, Mentions, Dependencies, and Audit Flow
 
 Purpose: add a comment with an `@username` mention, view mentions, add a blocker dependency, and inspect audit logs.
 
