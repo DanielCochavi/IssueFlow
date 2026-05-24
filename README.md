@@ -8,10 +8,6 @@
 IssueFlow is a backend service designed to handle a lightweight project and issue tracking platform.
 The system manages users, projects, tickets, comments, audit logs, ticket dependencies, attachments, mentions, workload reporting, automatic assignment, automatic escalation, soft delete and restore, and bulk ticket import/export.
 
-## Implementation Status
-
-This repository contains the completed IssueFlow backend implementation for the assignment API contract below. It is a single Spring Boot application with logical service boundaries for authentication, users, projects, tickets, comments, audit logs, dependencies, attachments, CSV import/export, mentions, workload, auto-assignment, and auto-escalation.
-
 ## Functionality
 The system provides the following APIs:
 
@@ -29,9 +25,7 @@ The system provides the following APIs:
 - **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER by project workload.
 
 ## Technical Aspects
-The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development. The application uses Spring Data JPA/Hibernate for persistence, Spring Security with JWT for authentication, BCrypt password hashing, Jakarta Bean Validation, centralized error handling, optimistic locking through JPA `@Version`, and focused automated tests.
-
-All endpoints require JWT authentication except `POST /users` and `POST /auth/login`. The local JWT signing secret and database password are development-only values and must be changed or externalized before deployment.
+The system is built using Java 21 or Java 25 with Spring Boot 3 or Spring Boot 4, leveraging its robust framework for creating RESTful APIs. Data persistence is managed using PostgreSQL via Spring Data JPA (Hibernate).
 
 ## Project System Design Diagram
 
@@ -40,9 +34,6 @@ All endpoints require JWT authentication except `POST /users` and `POST /auth/lo
 The diagram shows microservices-style logical architecture implemented inside a single Spring Boot application. Client/UI calls the backend through JWT-authenticated REST APIs. The Spring Boot backend contains logical modules for auth, users, projects, tickets, comments, audit logs, dependencies, attachments, workload, auto-assignment, CSV import/export, mentions, and auto-escalation.
 
 PostgreSQL stores all application data, including users, projects, tickets, comments, mentions, dependencies, attachments, and audit logs. The escalation scheduler runs inside the application and updates overdue tickets. Auto-assignment runs during ticket creation when `assigneeId` is omitted. The API tables below remain authoritative for the exposed REST endpoints.
-
-## Assignment Scope
-The backend implements the assignment APIs with RESTful endpoints, request validation, consistent error handling, security where required, persistence, auditability, and automated tests.
 
 ---
 
@@ -199,6 +190,15 @@ Run the application:
 
 ```bash
 ./mvnw spring-boot:run
+
+# run the packaged jar
+$ java -jar target/issueflow-*.jar
+```
+Test the application:
+
+```bash
+# run all tests (Maven)
+$ ./mvnw test
 ```
 
 Stop PostgreSQL:
