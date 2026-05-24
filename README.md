@@ -8,16 +8,9 @@
 IssueFlow is a backend service designed to handle a lightweight project and issue tracking platform.
 The system manages users, projects, tickets (issues), comments on tickets, audit logs, ticket dependencies, attachments, and bulk ticket import/export.
 
-## Current Implementation Stage
+## Implementation Status
 
-This repository is currently at **Step 1 — Clean Maven project skeleton**.
-
-- Java 21
-- Spring Boot 3.4.2
-- Single Maven Spring Boot application
-- PostgreSQL via Docker Compose for local development
-- No Swagger/OpenAPI in the current design
-- No business logic implemented yet
+This repository is implemented incrementally. The API tables below remain the assignment contract. Final setup, run, manual test flows, and architecture documentation will be completed in the final documentation step.
 
 ## Functionality
 The system provides the following APIs:
@@ -36,7 +29,7 @@ The system provides the following APIs:
 - **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER in the project.
 
 ## Technical Aspects
-The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development. Step 1 defines the application skeleton only; persistence, APIs, and business behavior are intentionally deferred to later implementation steps.
+The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development.
 
 ## Homework Task
 Candidates are expected to design and implement the above APIs, adhering to RESTful principles, including input validation, proper error handling, and relevant tests.

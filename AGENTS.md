@@ -26,6 +26,17 @@ IssueFlow is a Spring Boot backend platform for ticket management. It covers use
 
 Use `README.md` as the source of truth for assignment requirements and API behavior. Keep documentation paths and references aligned with the current IssueFlow naming.
 
+## README.md Change Policy
+
+- Do not edit `README.md` during normal implementation steps.
+- Do not update `README.md` with step-by-step progress such as "Step 2", "Step 3", "business logic not implemented yet", or similar temporary status notes.
+- Do not add manual test flows during feature implementation steps.
+- Do not add or update the architecture diagram during feature implementation steps.
+- Treat `README.md` as the stable assignment/API contract during implementation.
+- If `README.md` appears outdated during an implementation step, report it in the final summary instead of editing it.
+- Update `README.md` only in the final documentation step, or when setup/run commands or the public API contract truly changed.
+- Final README documentation work should include final setup/build/run/test instructions, one or two manual test flows, the final architecture diagram, and final notes aligned with implemented behavior.
+
 ## Package Convention
 
 IssueFlow uses flat package-by-layer.

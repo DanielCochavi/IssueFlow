@@ -19,7 +19,7 @@ Use this skill when implementing, testing, reviewing, or documenting IssueFlow b
 
 ## Project Shape
 
-IssueFlow is a Java 21 Spring Boot 3.4.2 single Maven Spring Boot application. PostgreSQL is available through Docker Compose for local development, but Step 1 intentionally does not implement persistence, APIs, or business logic.
+IssueFlow is a Java 21 Spring Boot 3.4.2 single Maven Spring Boot application. PostgreSQL is available through Docker Compose for local development. The repository is implemented incrementally, with `README.md` kept as the stable assignment/API contract during normal implementation steps.
 
 Primary package:
 
@@ -45,6 +45,17 @@ pom.xml
 ## Source Of Truth
 
 Use `README.md` as the assignment source of truth for required APIs and behavior. Keep the visible product name as `IssueFlow` and the full title as `IssueFlow – Ticket Management Backend Platform`.
+
+## README.md Change Policy
+
+- Do not edit `README.md` during normal implementation steps.
+- Do not update `README.md` with step-by-step progress such as "Step 2", "Step 3", "business logic not implemented yet", or similar temporary status notes.
+- Do not add manual test flows during feature implementation steps.
+- Do not add or update the architecture diagram during feature implementation steps.
+- Treat `README.md` as the stable assignment/API contract during implementation.
+- If `README.md` appears outdated during an implementation step, report it in the final summary instead of editing it.
+- Update `README.md` only in the final documentation step, or when setup/run commands or the public API contract truly changed.
+- Final README documentation work should include final setup/build/run/test instructions, one or two manual test flows, the final architecture diagram, and final notes aligned with implemented behavior.
 
 The required functional areas include:
 
@@ -131,7 +142,7 @@ src/test/resources/application.yaml
 
 ## Documentation Guidance
 
-When updating documentation, keep these files aligned:
+When updating documentation, keep these files aligned, while following the README change policy above:
 
 ```text
 README.md
