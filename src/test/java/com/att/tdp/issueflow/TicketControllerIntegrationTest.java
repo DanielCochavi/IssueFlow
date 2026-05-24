@@ -166,7 +166,7 @@ class TicketControllerIntegrationTest {
 	}
 
 	@Test
-	void createTicketAllowsMissingAssignee() throws Exception {
+	void createTicketAutoAssignsMissingAssigneeWhenDeveloperExists() throws Exception {
 		AuthenticatedUser developer = createAuthenticatedUser("unassignedticket", "DEVELOPER");
 		Long projectId = createProject(developer.token(), "Unassigned Project", "Unassigned project", developer.id());
 
@@ -182,7 +182,7 @@ class TicketControllerIntegrationTest {
 		mockMvc.perform(get("/tickets/{ticketId}", ticketId)
 				.header(HttpHeaders.AUTHORIZATION, bearer(developer.token())))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.assigneeId").doesNotExist());
+			.andExpect(jsonPath("$.assigneeId").value(developer.id().intValue()));
 	}
 
 	@Test

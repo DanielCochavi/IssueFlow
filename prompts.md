@@ -467,3 +467,49 @@ Codex was instructed to implement only Ticket CSV export/import using the existi
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, CSV escaping expectations, validation behavior, audit expectations, and security behavior.
+
+## Step 11 — Workload API and Auto-assignment
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the README Workload API endpoint: `GET /projects/{projectId}/workload`.
+- Implemented automatic ticket assignment when a ticket is created without an explicit `assigneeId`.
+- Workload counts non-deleted, non-`DONE` tickets assigned to each developer within the requested project.
+- Auto-assignment selects the least-loaded `DEVELOPER`, with oldest registration first and id as a deterministic fallback.
+- Successful auto-assignment writes `AUTO_ASSIGN` audit records for `TICKET` with actor `SYSTEM`.
+
+### Engineering Intent
+
+- Keep workload calculation and auto-assignment candidate selection in `WorkloadService`.
+- Keep `TicketService.createTicket` responsible for deciding whether auto-assignment should run.
+- Preserve explicit assignee behavior for ticket creation and PATCH updates.
+- Keep CSV import behavior stable by letting `TicketCsvService` create tickets directly from CSV data without triggering auto-assignment.
+- Verify endpoint behavior, sorting, counting, assignment, and audit writes with focused integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement only workload reporting and ticket create-time auto-assignment while preserving existing ticket lifecycle, dependency blocker, soft-delete, CSV import/export, comments, mentions, attachments, auth, and audit behavior.
+
+### Key Design Decisions
+
+- No project-membership or project-user link model exists in the current persistence model, so all users with role `DEVELOPER` are treated as the workload population and auto-assignment candidate pool.
+- ADMIN users are excluded from workload responses and auto-assignment candidates.
+- Missing or deleted projects return the existing `Project not found` response.
+- If no developer candidates exist, ticket creation succeeds with no assignee and no `AUTO_ASSIGN` audit record.
+- Explicit `assigneeId` values on create and update override assignment behavior and do not write `AUTO_ASSIGN` audit records.
+- CSV imports with blank `assigneeId` remain unassigned to preserve the Step 10 import contract.
+
+### Scope Control
+
+- Auto-escalation scheduler, final README documentation, architecture diagram updates, Swagger/OpenAPI, bootstrap data, smoke-test scripts, project membership modeling, notification delivery, and assignment emails were not implemented in this step.
+
+### Validation and Testing
+
+- `WorkloadAndAutoAssignmentIntegrationTest` covers JWT protection, missing/deleted project validation, developer-only workload responses, same-project open-ticket counts, soft-delete and `DONE` exclusions, workload sorting, auto-assignment tie-breaking and least-loaded selection, no-candidate behavior, explicit assignment preservation, PATCH assignment override behavior, system audit records, and CSV import non-auto-assignment.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, workload ordering rules, auto-assignment rules, audit expectations, and security behavior.

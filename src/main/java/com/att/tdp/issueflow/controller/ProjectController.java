@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.att.tdp.issueflow.dto.CreateProjectRequest;
 import com.att.tdp.issueflow.dto.ProjectResponse;
 import com.att.tdp.issueflow.dto.UpdateProjectRequest;
+import com.att.tdp.issueflow.dto.WorkloadResponse;
 import com.att.tdp.issueflow.service.ProjectService;
+import com.att.tdp.issueflow.service.WorkloadService;
 
 import jakarta.validation.Valid;
 
@@ -26,8 +28,11 @@ public class ProjectController {
 
 	private final ProjectService projectService;
 
-	public ProjectController(ProjectService projectService) {
+	private final WorkloadService workloadService;
+
+	public ProjectController(ProjectService projectService, WorkloadService workloadService) {
 		this.projectService = projectService;
+		this.workloadService = workloadService;
 	}
 
 	@GetMapping
@@ -44,6 +49,11 @@ public class ProjectController {
 	@GetMapping("/{projectId}")
 	public ProjectResponse getProject(@PathVariable Long projectId) {
 		return projectService.getProject(projectId);
+	}
+
+	@GetMapping("/{projectId}/workload")
+	public List<WorkloadResponse> getProjectWorkload(@PathVariable Long projectId) {
+		return workloadService.getProjectWorkload(projectId);
 	}
 
 	@PostMapping

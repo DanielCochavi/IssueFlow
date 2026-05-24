@@ -36,17 +36,21 @@ public class TicketService {
 
 	private final AuditLogService auditLogService;
 
+	private final WorkloadService workloadService;
+
 	public TicketService(
 			TicketRepository ticketRepository,
 			TicketDependencyRepository ticketDependencyRepository,
 			ProjectRepository projectRepository,
 			UserRepository userRepository,
-			AuditLogService auditLogService) {
+			AuditLogService auditLogService,
+			WorkloadService workloadService) {
 		this.ticketRepository = ticketRepository;
 		this.ticketDependencyRepository = ticketDependencyRepository;
 		this.projectRepository = projectRepository;
 		this.userRepository = userRepository;
 		this.auditLogService = auditLogService;
+		this.workloadService = workloadService;
 	}
 
 	public List<TicketResponse> getTicketsByProject(Long projectId) {
@@ -64,7 +68,10 @@ public class TicketService {
 	@Transactional
 	public TicketResponse createTicket(CreateTicketRequest request) {
 		Project project = getActiveProject(request.projectId());
-		User assignee = request.assigneeId() == null ? null : getRequiredAssignee(request.assigneeId());
+		boolean autoAssigned = request.assigneeId() == null;
+		User assignee = autoAssigned
+				? workloadService.findLeastLoadedDeveloper(project.getId()).orElse(null)
+				: getRequiredAssignee(request.assigneeId());
 
 		Ticket ticket = new Ticket();
 		ticket.setTitle(normalize(request.title()));
@@ -80,6 +87,9 @@ public class TicketService {
 
 		Ticket savedTicket = ticketRepository.save(ticket);
 		auditLogService.recordCurrentUserAction(AuditAction.CREATE, AuditEntityType.TICKET, savedTicket.getId());
+		if (autoAssigned && assignee != null) {
+			auditLogService.recordSystemAction(AuditAction.AUTO_ASSIGN, AuditEntityType.TICKET, savedTicket.getId());
+		}
 		return toResponse(savedTicket);
 	}
 
