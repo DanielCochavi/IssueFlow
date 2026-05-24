@@ -18,6 +18,7 @@ import com.att.tdp.issueflow.enums.TicketStatus;
 import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
 import com.att.tdp.issueflow.repository.ProjectRepository;
+import com.att.tdp.issueflow.repository.TicketDependencyRepository;
 import com.att.tdp.issueflow.repository.TicketRepository;
 import com.att.tdp.issueflow.repository.UserRepository;
 
@@ -27,6 +28,8 @@ public class TicketService {
 
 	private final TicketRepository ticketRepository;
 
+	private final TicketDependencyRepository ticketDependencyRepository;
+
 	private final ProjectRepository projectRepository;
 
 	private final UserRepository userRepository;
@@ -35,10 +38,12 @@ public class TicketService {
 
 	public TicketService(
 			TicketRepository ticketRepository,
+			TicketDependencyRepository ticketDependencyRepository,
 			ProjectRepository projectRepository,
 			UserRepository userRepository,
 			AuditLogService auditLogService) {
 		this.ticketRepository = ticketRepository;
+		this.ticketDependencyRepository = ticketDependencyRepository;
 		this.projectRepository = projectRepository;
 		this.userRepository = userRepository;
 		this.auditLogService = auditLogService;
@@ -103,6 +108,9 @@ public class TicketService {
 
 		if (request.status() != null) {
 			validateStatusTransition(ticket.getStatus(), request.status(), hasNonStatusUpdate(request));
+			if (request.status() == TicketStatus.DONE) {
+				validateNoUnresolvedBlockers(ticket.getId());
+			}
 			ticket.setStatus(request.status());
 		}
 
@@ -190,6 +198,12 @@ public class TicketService {
 		// The assignment permits only one-step forward movement through the ticket lifecycle.
 		if (expectedNextStatus(current) != requested) {
 			throw new BadRequestException("Invalid ticket status transition");
+		}
+	}
+
+	private void validateNoUnresolvedBlockers(Long ticketId) {
+		if (ticketDependencyRepository.existsUnresolvedBlocker(ticketId, TicketStatus.DONE)) {
+			throw new BadRequestException("Ticket cannot be moved to DONE while it has unresolved blockers");
 		}
 	}
 

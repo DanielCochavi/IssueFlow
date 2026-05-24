@@ -25,6 +25,7 @@ import com.att.tdp.issueflow.entity.Ticket;
 import com.att.tdp.issueflow.enums.TicketPriority;
 import com.att.tdp.issueflow.repository.AuditLogRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
+import com.att.tdp.issueflow.repository.TicketDependencyRepository;
 import com.att.tdp.issueflow.repository.TicketRepository;
 import com.att.tdp.issueflow.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,9 @@ class TicketControllerIntegrationTest {
 	private AuditLogRepository auditLogRepository;
 
 	@Autowired
+	private TicketDependencyRepository ticketDependencyRepository;
+
+	@Autowired
 	private TicketRepository ticketRepository;
 
 	@Autowired
@@ -54,6 +58,7 @@ class TicketControllerIntegrationTest {
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		ticketDependencyRepository.deleteAll();
 		ticketRepository.deleteAll();
 		projectRepository.deleteAll();
 		userRepository.deleteAll();

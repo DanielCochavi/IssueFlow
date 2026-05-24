@@ -122,7 +122,22 @@ curl "http://localhost:8080/tickets?projectId=1" \
   -H "Authorization: Bearer <token>"
 ```
 
-Fetch audit logs for recorded user and project actions.
+After creating two tickets in the same project, add, list, and remove a dependency.
+
+```bash
+curl -X POST http://localhost:8080/tickets/1/dependencies \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "blockedBy": 2 }'
+
+curl http://localhost:8080/tickets/1/dependencies \
+  -H "Authorization: Bearer <token>"
+
+curl -X DELETE http://localhost:8080/tickets/1/dependencies/2 \
+  -H "Authorization: Bearer <token>"
+```
+
+Fetch audit logs for recorded actions.
 
 ```bash
 curl "http://localhost:8080/audit-logs?entityType=PROJECT" \

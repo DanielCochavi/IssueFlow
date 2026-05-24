@@ -21,6 +21,7 @@ import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
 import com.att.tdp.issueflow.repository.AuditLogRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
+import com.att.tdp.issueflow.repository.TicketDependencyRepository;
 import com.att.tdp.issueflow.repository.TicketRepository;
 import com.att.tdp.issueflow.repository.UserRepository;
 import com.att.tdp.issueflow.service.UserService;
@@ -41,11 +42,15 @@ class UserServiceTest {
 	private AuditLogRepository auditLogRepository;
 
 	@Autowired
+	private TicketDependencyRepository ticketDependencyRepository;
+
+	@Autowired
 	private TicketRepository ticketRepository;
 
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		ticketDependencyRepository.deleteAll();
 		ticketRepository.deleteAll();
 		projectRepository.deleteAll();
 		userRepository.deleteAll();

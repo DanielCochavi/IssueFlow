@@ -267,3 +267,57 @@ Codex was instructed to implement only core Ticket CRUD and ticket soft-delete/r
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, audit expectations, validation behavior, and security behavior.
+
+## Step 7 — Ticket Dependencies and DONE Blocker Rule
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the Ticket Dependencies requirement from the assignment.
+- Matched the README dependency endpoints:
+  - `POST /tickets/{ticketId}/dependencies`
+  - `GET /tickets/{ticketId}/dependencies`
+  - `DELETE /tickets/{ticketId}/dependencies/{blockerId}`
+- Enforced the blocker rule that prevents moving a ticket to `DONE` while unresolved blockers exist.
+- Enforced the same-project constraint for dependent tickets.
+- Recorded audit logs for state-changing dependency actions.
+
+### Engineering Intent
+
+- Keep dependency business rules in `TicketDependencyService`.
+- Use DTO request and response boundaries instead of exposing JPA entities.
+- Validate that dependencies stay within one project.
+- Reject duplicate dependencies and self-dependencies.
+- Integrate unresolved-blocker checks into the existing `TicketService` lifecycle validation.
+- Audit dependency add/remove operations.
+- Verify HTTP behavior and lifecycle integration with focused MockMvc tests.
+
+### Prompt Summary
+
+Codex was instructed to implement dependency endpoints and enforce the DONE blocker rule while deferring comments, attachments, import/export, workload, auto-assignment, and auto-escalation.
+
+### Key Design Decisions
+
+- Reuse the existing `TicketDependency` entity and repository.
+- Reject self-dependency.
+- Reject duplicate dependency.
+- Reject cross-project dependency.
+- Reject direct circular dependencies.
+- Block `DONE` only when blockers are unresolved.
+- Allow `DONE` when blockers are already `DONE` or soft-deleted.
+- Audit add/remove dependency actions as `TICKET_DEPENDENCY` events.
+
+### Scope Control
+
+- Comments, mentions, attachments, CSV import/export, workload, auto-assignment, and auto-escalation were not implemented in this step.
+- Full graph cycle detection was not introduced; the implementation covers direct circular dependencies required for this step.
+
+### Validation and Testing
+
+- `TicketDependencyIntegrationTest` covers dependency add/list/remove, JWT protection, missing/deleted ticket validation, same-project validation, self/duplicate/direct-cycle validation, DONE blocker behavior, and dependency audit writes.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, lifecycle rules, audit expectations, and security behavior.
