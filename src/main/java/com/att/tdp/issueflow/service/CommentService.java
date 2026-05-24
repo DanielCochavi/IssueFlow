@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.AddCommentRequest;
-import com.att.tdp.issueflow.dto.CommentResponse;
-import com.att.tdp.issueflow.dto.MentionedUserResponse;
-import com.att.tdp.issueflow.dto.UpdateCommentRequest;
-import com.att.tdp.issueflow.dto.UserMentionsResponse;
+import com.att.tdp.issueflow.dto.request.AddCommentRequest;
+import com.att.tdp.issueflow.dto.response.CommentResponse;
+import com.att.tdp.issueflow.dto.response.MentionedUserResponse;
+import com.att.tdp.issueflow.dto.request.UpdateCommentRequest;
+import com.att.tdp.issueflow.dto.response.UserMentionsResponse;
 import com.att.tdp.issueflow.entity.Comment;
 import com.att.tdp.issueflow.entity.Mention;
 import com.att.tdp.issueflow.entity.Ticket;

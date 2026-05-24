@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.AuthResponse;
-import com.att.tdp.issueflow.dto.LoginRequest;
-import com.att.tdp.issueflow.dto.UserResponse;
+import com.att.tdp.issueflow.dto.response.AuthResponse;
+import com.att.tdp.issueflow.dto.request.LoginRequest;
+import com.att.tdp.issueflow.dto.response.UserResponse;
 import com.att.tdp.issueflow.service.AuthService;
 
 import jakarta.validation.Valid;

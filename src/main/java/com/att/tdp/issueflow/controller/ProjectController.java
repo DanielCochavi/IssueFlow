@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.CreateProjectRequest;
-import com.att.tdp.issueflow.dto.ProjectResponse;
-import com.att.tdp.issueflow.dto.UpdateProjectRequest;
-import com.att.tdp.issueflow.dto.WorkloadResponse;
+import com.att.tdp.issueflow.dto.request.CreateProjectRequest;
+import com.att.tdp.issueflow.dto.response.ProjectResponse;
+import com.att.tdp.issueflow.dto.request.UpdateProjectRequest;
+import com.att.tdp.issueflow.dto.response.WorkloadResponse;
 import com.att.tdp.issueflow.service.ProjectService;
 import com.att.tdp.issueflow.service.WorkloadService;
 

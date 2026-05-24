@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.AddTicketDependencyRequest;
-import com.att.tdp.issueflow.dto.TicketDependencyResponse;
+import com.att.tdp.issueflow.dto.request.AddTicketDependencyRequest;
+import com.att.tdp.issueflow.dto.response.TicketDependencyResponse;
 import com.att.tdp.issueflow.entity.Ticket;
 import com.att.tdp.issueflow.entity.TicketDependency;
 import com.att.tdp.issueflow.enums.AuditAction;

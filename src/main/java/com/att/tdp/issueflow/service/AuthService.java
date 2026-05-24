@@ -7,9 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.AuthResponse;
-import com.att.tdp.issueflow.dto.LoginRequest;
-import com.att.tdp.issueflow.dto.UserResponse;
+import com.att.tdp.issueflow.dto.response.AuthResponse;
+import com.att.tdp.issueflow.dto.request.LoginRequest;
+import com.att.tdp.issueflow.dto.response.UserResponse;
 import com.att.tdp.issueflow.entity.User;
 import com.att.tdp.issueflow.exception.UnauthorizedException;
 import com.att.tdp.issueflow.repository.UserRepository;

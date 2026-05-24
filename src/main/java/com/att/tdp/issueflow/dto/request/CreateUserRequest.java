@@ -1,4 +1,4 @@
-package com.att.tdp.issueflow.dto;
+package com.att.tdp.issueflow.dto.request;
 
 import com.att.tdp.issueflow.enums.Role;
 

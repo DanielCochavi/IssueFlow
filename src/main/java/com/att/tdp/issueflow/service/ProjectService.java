@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.CreateProjectRequest;
-import com.att.tdp.issueflow.dto.ProjectResponse;
-import com.att.tdp.issueflow.dto.UpdateProjectRequest;
+import com.att.tdp.issueflow.dto.request.CreateProjectRequest;
+import com.att.tdp.issueflow.dto.response.ProjectResponse;
+import com.att.tdp.issueflow.dto.request.UpdateProjectRequest;
 import com.att.tdp.issueflow.entity.Project;
 import com.att.tdp.issueflow.entity.User;
 import com.att.tdp.issueflow.enums.AuditAction;

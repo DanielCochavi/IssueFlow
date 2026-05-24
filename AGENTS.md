@@ -46,12 +46,19 @@ Use `README.md` as the source of truth for assignment requirements and API behav
 
 ## Package Convention
 
-IssueFlow uses flat package-by-layer.
+IssueFlow uses flat package-by-layer. DTOs are the only layer split by request/response type.
 
-Correct pattern:
+Correct pattern for most layers:
 
 ```text
 com.att.tdp.issueflow.<layer>.<ClassName>
+```
+
+Correct DTO patterns:
+
+```text
+com.att.tdp.issueflow.dto.request.<ClassName>
+com.att.tdp.issueflow.dto.response.<ClassName>
 ```
 
 Correct examples:
@@ -62,7 +69,8 @@ com.att.tdp.issueflow.service.TicketService
 com.att.tdp.issueflow.repository.TicketRepository
 com.att.tdp.issueflow.entity.Ticket
 com.att.tdp.issueflow.enums.TicketStatus
-com.att.tdp.issueflow.dto.TicketResponse
+com.att.tdp.issueflow.dto.request.CreateTicketRequest
+com.att.tdp.issueflow.dto.response.TicketResponse
 ```
 
 Wrong patterns:
@@ -77,7 +85,8 @@ Wrong examples:
 ```text
 com.att.tdp.issueflow.service.ticket.TicketService
 com.att.tdp.issueflow.repository.ticket.TicketRepository
-com.att.tdp.issueflow.dto.user.UserResponse
+com.att.tdp.issueflow.dto.request.ticket.CreateTicketRequest
+com.att.tdp.issueflow.dto.response.ticket.TicketResponse
 com.att.tdp.issueflow.ticket.service.TicketService
 ```
 
@@ -86,12 +95,12 @@ com.att.tdp.issueflow.ticket.service.TicketService
 - Spring Data repositories belong in `com.att.tdp.issueflow.repository`.
 - JPA entities belong in `com.att.tdp.issueflow.entity`.
 - Enums belong in `com.att.tdp.issueflow.enums`.
-- Request and response DTOs belong in `com.att.tdp.issueflow.dto`.
-- Mappers belong in `com.att.tdp.issueflow.mapper`.
+- Request DTOs belong in `com.att.tdp.issueflow.dto.request`.
+- Response DTOs belong in `com.att.tdp.issueflow.dto.response`.
 - Configuration classes belong in `com.att.tdp.issueflow.config`.
 - Exceptions and exception handlers belong in `com.att.tdp.issueflow.exception`.
 - Security and JWT classes belong in `com.att.tdp.issueflow.security`.
-- Do not create domain subpackages under these layer packages.
+- Do not create domain subpackages under these layer packages, including under `dto.request` or `dto.response`.
 
 The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowApplication`.
 

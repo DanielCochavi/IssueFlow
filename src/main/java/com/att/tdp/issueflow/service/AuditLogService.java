@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.AuditLogResponse;
+import com.att.tdp.issueflow.dto.response.AuditLogResponse;
 import com.att.tdp.issueflow.entity.AuditLog;
 import com.att.tdp.issueflow.enums.AuditAction;
 import com.att.tdp.issueflow.enums.AuditActor;

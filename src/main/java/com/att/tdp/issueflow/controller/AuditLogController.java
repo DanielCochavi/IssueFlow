@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.AuditLogResponse;
+import com.att.tdp.issueflow.dto.response.AuditLogResponse;
 import com.att.tdp.issueflow.enums.AuditAction;
 import com.att.tdp.issueflow.enums.AuditActor;
 import com.att.tdp.issueflow.enums.AuditEntityType;

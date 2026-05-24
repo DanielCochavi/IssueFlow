@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.att.tdp.issueflow.dto.CreateUserRequest;
-import com.att.tdp.issueflow.dto.UpdateUserRequest;
-import com.att.tdp.issueflow.dto.UserResponse;
+import com.att.tdp.issueflow.dto.request.CreateUserRequest;
+import com.att.tdp.issueflow.dto.request.UpdateUserRequest;
+import com.att.tdp.issueflow.dto.response.UserResponse;
 import com.att.tdp.issueflow.entity.User;
 import com.att.tdp.issueflow.enums.Role;
 import com.att.tdp.issueflow.exception.BadRequestException;

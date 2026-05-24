@@ -1,4 +1,4 @@
-package com.att.tdp.issueflow.dto;
+package com.att.tdp.issueflow.dto.response;
 
 public record AuthResponse(
 		String accessToken,

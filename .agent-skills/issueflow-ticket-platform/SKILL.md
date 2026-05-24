@@ -82,9 +82,9 @@ The required functional areas include:
 
 ## Package Convention
 
-Future generated code must follow flat package-by-layer automatically. Classes go directly inside the layer package.
+Future generated code must follow flat package-by-layer automatically. Classes go directly inside the layer package. DTOs are split only by request/response type.
 
-Correct:
+Correct for most layers:
 
 ```text
 com.att.tdp.issueflow.controller.TicketController
@@ -92,7 +92,13 @@ com.att.tdp.issueflow.service.TicketService
 com.att.tdp.issueflow.repository.TicketRepository
 com.att.tdp.issueflow.entity.Ticket
 com.att.tdp.issueflow.enums.TicketStatus
-com.att.tdp.issueflow.dto.TicketResponse
+```
+
+Correct DTO packages:
+
+```text
+com.att.tdp.issueflow.dto.request.CreateTicketRequest
+com.att.tdp.issueflow.dto.response.TicketResponse
 ```
 
 Wrong:
@@ -101,9 +107,9 @@ Wrong:
 com.att.tdp.issueflow.controller.ticket.TicketController
 com.att.tdp.issueflow.service.ticket.TicketService
 com.att.tdp.issueflow.repository.ticket.TicketRepository
-com.att.tdp.issueflow.dto.ticket.TicketResponse
+com.att.tdp.issueflow.dto.request.ticket.CreateTicketRequest
+com.att.tdp.issueflow.dto.response.ticket.TicketResponse
 com.att.tdp.issueflow.ticket.service.TicketService
-com.att.tdp.issueflow.ticket.dto.TicketResponse
 ```
 
 The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowApplication`.
@@ -116,13 +122,13 @@ The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowAppli
 - Keep repositories in `com.att.tdp.issueflow.repository`.
 - Keep JPA entities in `com.att.tdp.issueflow.entity`.
 - Keep enums in `com.att.tdp.issueflow.enums`.
-- Keep request and response DTOs in `com.att.tdp.issueflow.dto`.
-- Keep mappers in `com.att.tdp.issueflow.mapper`.
+- Keep request DTOs in `com.att.tdp.issueflow.dto.request`.
+- Keep response DTOs in `com.att.tdp.issueflow.dto.response`.
 - Keep configuration in `com.att.tdp.issueflow.config`.
 - Keep exceptions and handlers in `com.att.tdp.issueflow.exception`.
 - Use DTOs for request and response payloads rather than exposing JPA entities directly.
 - Do not expose JPA entities directly through controllers.
-- Do not create domain subpackages under these layer packages.
+- Do not create domain subpackages under these layer packages, including under `dto.request` or `dto.response`.
 - Do not place implementation classes directly under the root package or under domain-first packages.
 - Validate request bodies with Jakarta Bean Validation annotations.
 - Model missing resources and invalid state transitions with consistent error responses.

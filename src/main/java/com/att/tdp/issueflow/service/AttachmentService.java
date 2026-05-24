@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.att.tdp.issueflow.dto.AttachmentResponse;
+import com.att.tdp.issueflow.dto.response.AttachmentResponse;
 import com.att.tdp.issueflow.entity.Attachment;
 import com.att.tdp.issueflow.entity.Ticket;
 import com.att.tdp.issueflow.enums.AuditAction;

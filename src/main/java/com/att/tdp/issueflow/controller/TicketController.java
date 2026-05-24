@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.att.tdp.issueflow.dto.CreateTicketRequest;
-import com.att.tdp.issueflow.dto.TicketImportSummaryResponse;
-import com.att.tdp.issueflow.dto.TicketResponse;
-import com.att.tdp.issueflow.dto.UpdateTicketRequest;
+import com.att.tdp.issueflow.dto.request.CreateTicketRequest;
+import com.att.tdp.issueflow.dto.response.TicketImportSummaryResponse;
+import com.att.tdp.issueflow.dto.response.TicketResponse;
+import com.att.tdp.issueflow.dto.request.UpdateTicketRequest;
 import com.att.tdp.issueflow.service.TicketCsvService;
 import com.att.tdp.issueflow.service.TicketService;
 

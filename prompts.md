@@ -644,3 +644,15 @@ Codex was instructed to check whether Swagger/OpenAPI already worked, add the mi
 ### Ownership Note
 
 - The changes were reviewed against the README API contract, current security model, local runbook expectations, Springdoc documentation behavior, and assignment constraints.
+
+## Final Cleanup — DTO Package Organization
+
+Model used: GPT-5.5 Thinking.
+
+### Summary
+
+- Moved request DTOs into `com.att.tdp.issueflow.dto.request`.
+- Moved response DTOs into `com.att.tdp.issueflow.dto.response`.
+- Removed the empty `src/main/java/com/att/tdp/issueflow/mapper` package directory.
+- Updated imports, package declarations, tests, `AGENTS.md`, and the IssueFlow skill package convention.
+- Verified the cleanup with `./mvnw clean verify`.

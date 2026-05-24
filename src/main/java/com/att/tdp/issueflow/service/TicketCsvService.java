@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.att.tdp.issueflow.dto.TicketImportSummaryResponse;
+import com.att.tdp.issueflow.dto.response.TicketImportSummaryResponse;
 import com.att.tdp.issueflow.entity.Project;
 import com.att.tdp.issueflow.entity.Ticket;
 import com.att.tdp.issueflow.entity.User;

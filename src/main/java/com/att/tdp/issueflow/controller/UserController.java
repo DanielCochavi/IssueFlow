@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.CreateUserRequest;
-import com.att.tdp.issueflow.dto.UpdateUserRequest;
-import com.att.tdp.issueflow.dto.UserMentionsResponse;
-import com.att.tdp.issueflow.dto.UserResponse;
+import com.att.tdp.issueflow.dto.request.CreateUserRequest;
+import com.att.tdp.issueflow.dto.request.UpdateUserRequest;
+import com.att.tdp.issueflow.dto.response.UserMentionsResponse;
+import com.att.tdp.issueflow.dto.response.UserResponse;
 import com.att.tdp.issueflow.service.CommentService;
 import com.att.tdp.issueflow.service.UserService;
 

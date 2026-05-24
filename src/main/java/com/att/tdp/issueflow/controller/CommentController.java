@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.AddCommentRequest;
-import com.att.tdp.issueflow.dto.CommentResponse;
-import com.att.tdp.issueflow.dto.UpdateCommentRequest;
+import com.att.tdp.issueflow.dto.request.AddCommentRequest;
+import com.att.tdp.issueflow.dto.response.CommentResponse;
+import com.att.tdp.issueflow.dto.request.UpdateCommentRequest;
 import com.att.tdp.issueflow.service.CommentService;
 
 import jakarta.validation.Valid;

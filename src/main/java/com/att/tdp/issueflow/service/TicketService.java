@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.att.tdp.issueflow.dto.CreateTicketRequest;
-import com.att.tdp.issueflow.dto.TicketResponse;
-import com.att.tdp.issueflow.dto.UpdateTicketRequest;
+import com.att.tdp.issueflow.dto.request.CreateTicketRequest;
+import com.att.tdp.issueflow.dto.response.TicketResponse;
+import com.att.tdp.issueflow.dto.request.UpdateTicketRequest;
 import com.att.tdp.issueflow.entity.Project;
 import com.att.tdp.issueflow.entity.Ticket;
 import com.att.tdp.issueflow.entity.User;

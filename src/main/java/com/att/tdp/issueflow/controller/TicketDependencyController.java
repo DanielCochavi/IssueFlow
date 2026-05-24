@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.att.tdp.issueflow.dto.AddTicketDependencyRequest;
-import com.att.tdp.issueflow.dto.TicketDependencyResponse;
+import com.att.tdp.issueflow.dto.request.AddTicketDependencyRequest;
+import com.att.tdp.issueflow.dto.response.TicketDependencyResponse;
 import com.att.tdp.issueflow.service.TicketDependencyService;
 
 import jakarta.validation.Valid;
