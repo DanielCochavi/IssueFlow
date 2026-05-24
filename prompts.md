@@ -9,3 +9,7 @@ Prompt summary: Clarify the instruction files first so future generated code fol
 Package convention correction: The skeleton instructions were corrected from layer-then-domain packages to flat package-by-layer packages, such as `com.att.tdp.issueflow.service.TicketService`.
 
 Single-app correction: The generated Maven multi-module split was removed and the project was corrected back to one Spring Boot application with a flat package-by-layer skeleton under `src/main/java/com/att/tdp/issueflow`.
+
+## Step 3 — Password Handling Decision
+
+The provided README table for POST /users does not include a password field, but the authentication contract requires POST /auth/login to accept username and password. Because there is no separate register or set-password endpoint, the implementation accepts password in CreateUserRequest for POST /users, hashes it with BCrypt, stores only User.passwordHash, and never exposes password or passwordHash in responses. JWTs are issued only after successful username/password validation.
