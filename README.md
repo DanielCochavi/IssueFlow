@@ -179,7 +179,7 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 - There is no separate project membership model. Workload and auto-assignment consider all users with role `DEVELOPER`, counting their non-deleted, non-DONE tickets in the requested project.
 - The auto-escalation scheduler runs in the application. It escalates overdue unresolved tickets one priority level per cycle and marks CRITICAL overdue tickets with `isOverdue=true`.
 
-## Local Development
+## Running Locally
 
 For the full local runbook, see `run.md`.
 
@@ -311,9 +311,7 @@ curl -X POST "$BASE_URL/tickets/import" \
 
 ## AI & Agents
 
-We encourage you to use AI during the process. Document how you used the agent and add all relevant files (skills, instructions, plan, etc.).
-
-Add the main and relevant prompts that show your interaction with the agents in a `prompts.md` file.
+This project was developed with AI-assisted coding support. The main prompts, agent instructions, and model usage are documented in `prompts.md`, `AGENTS.md`, and `.agent-skills/`.
 
 ---
 
