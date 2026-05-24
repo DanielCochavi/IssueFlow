@@ -20,6 +20,7 @@ import com.att.tdp.issueflow.enums.Role;
 import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
 import com.att.tdp.issueflow.repository.AuditLogRepository;
+import com.att.tdp.issueflow.repository.AttachmentRepository;
 import com.att.tdp.issueflow.repository.CommentRepository;
 import com.att.tdp.issueflow.repository.MentionRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
@@ -44,6 +45,9 @@ class UserServiceTest {
 	private AuditLogRepository auditLogRepository;
 
 	@Autowired
+	private AttachmentRepository attachmentRepository;
+
+	@Autowired
 	private MentionRepository mentionRepository;
 
 	@Autowired
@@ -58,6 +62,7 @@ class UserServiceTest {
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		attachmentRepository.deleteAll();
 		mentionRepository.deleteAll();
 		commentRepository.deleteAll();
 		ticketDependencyRepository.deleteAll();

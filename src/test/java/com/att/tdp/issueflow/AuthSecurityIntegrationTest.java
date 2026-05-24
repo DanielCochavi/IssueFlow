@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.att.tdp.issueflow.repository.AuditLogRepository;
+import com.att.tdp.issueflow.repository.AttachmentRepository;
 import com.att.tdp.issueflow.repository.CommentRepository;
 import com.att.tdp.issueflow.repository.MentionRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
@@ -46,6 +47,9 @@ class AuthSecurityIntegrationTest {
 	private AuditLogRepository auditLogRepository;
 
 	@Autowired
+	private AttachmentRepository attachmentRepository;
+
+	@Autowired
 	private MentionRepository mentionRepository;
 
 	@Autowired
@@ -60,6 +64,7 @@ class AuthSecurityIntegrationTest {
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		attachmentRepository.deleteAll();
 		mentionRepository.deleteAll();
 		commentRepository.deleteAll();
 		ticketDependencyRepository.deleteAll();

@@ -372,3 +372,49 @@ Codex was instructed to implement comments and mentions together because the REA
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, mention rules, audit expectations, validation behavior, and security behavior.
+
+## Step 9 — Attachment Management
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the Attachment Management requirement from the assignment.
+- Matched the README attachment endpoint contract for uploading and deleting ticket attachments.
+- Enforced the assignment upload limits: maximum file size of 10 MB and allowed content types of `image/png`, `image/jpeg`, `application/pdf`, and `text/plain`.
+- Recorded audit logs for state-changing attachment operations.
+
+### Engineering Intent
+
+- Keep attachment validation and persistence rules in `AttachmentService`.
+- Use `AttachmentResponse` as the API boundary so raw file bytes are never exposed.
+- Validate the target ticket is active before accepting or deleting an attachment.
+- Store attachment metadata and file bytes through the existing `Attachment` persistence model.
+- Integrate audit logging for attachment upload and delete.
+- Verify HTTP behavior and validation with focused MockMvc integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement only attachment upload and delete behavior for tickets while preserving the existing package structure, audit infrastructure, and README contract.
+
+### Key Design Decisions
+
+- Reuse the existing `Attachment` entity and `AttachmentRepository`.
+- Keep uploads limited to a small fixed content-type allow-list.
+- Reject missing, empty, oversized, and unsupported files before persistence.
+- Preserve the original filename when provided and fall back to `attachment` when it is missing.
+- Store file bytes in the database and return only metadata in API responses.
+- Audit attachment upload and delete without storing file content or filenames in audit logs.
+
+### Scope Control
+
+- Attachment download/list endpoints, CSV import/export, workload, auto-assignment, auto-escalation, Swagger/OpenAPI, bootstrap data, smoke tests, and architecture documentation were not implemented in this step.
+
+### Validation and Testing
+
+- `AttachmentControllerIntegrationTest` covers upload and delete JWT protection, successful upload response shape, missing/deleted ticket validation, missing/empty/oversized/unsupported file validation, delete ownership validation, and attachment audit writes.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, attachment validation rules, audit expectations, and security behavior.

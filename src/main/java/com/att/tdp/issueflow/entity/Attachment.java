@@ -1,5 +1,8 @@
 package com.att.tdp.issueflow.entity;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,5 +33,7 @@ public class Attachment extends RecordBase {
 	private Long sizeBytes;
 
 	@Lob
+	@JdbcTypeCode(SqlTypes.VARBINARY)
+	@Column(nullable = false, columnDefinition = "bytea")
 	private byte[] data;
 }

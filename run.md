@@ -156,6 +156,17 @@ curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
   -H "Authorization: Bearer <token>"
 ```
 
+Upload and delete an attachment for a ticket.
+
+```bash
+curl -X POST http://localhost:8080/tickets/1/attachments \
+  -H "Authorization: Bearer <token>" \
+  -F "file=@./screenshot.png;type=image/png"
+
+curl -X DELETE http://localhost:8080/tickets/1/attachments/1 \
+  -H "Authorization: Bearer <token>"
+```
+
 Fetch audit logs for recorded actions.
 
 ```bash
