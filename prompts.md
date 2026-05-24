@@ -13,3 +13,10 @@ Single-app correction: The generated Maven multi-module split was removed and th
 ## Step 3 — Password Handling Decision
 
 The provided README table for POST /users does not include a password field, but the authentication contract requires POST /auth/login to accept username and password. Because there is no separate register or set-password endpoint, the implementation accepts password in CreateUserRequest for POST /users, hashes it with BCrypt, stores only User.passwordHash, and never exposes password or passwordHash in responses. JWTs are issued only after successful username/password validation.
+
+## Step 4 — Project API and Project Soft Delete
+
+Model used: GPT-5.5 Thinking
+
+Summary:
+Implemented Project CRUD according to README.md and the TDP requirements PDF, including soft delete, ADMIN-only deleted-project listing, ADMIN-only restore, validation, and tests.

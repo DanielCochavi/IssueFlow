@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import com.att.tdp.issueflow.security.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	private static final String DEV_ONLY_JWT_SECRET = "dev-only-need-to-change-before-deployment";
@@ -57,12 +59,19 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.exceptionHandling(exception -> exception.authenticationEntryPoint((request, response, authException) -> {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				response.getWriter().write(
-						"{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Authentication required\"}");
-			}))
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint((request, response, authException) -> {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+					response.getWriter().write(
+							"{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Authentication required\"}");
+				})
+				.accessDeniedHandler((request, response, accessDeniedException) -> {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+					response.getWriter().write(
+							"{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access denied\"}");
+				}))
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.POST, "/auth/login", "/users").permitAll()
 				.anyRequest().authenticated())
