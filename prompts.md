@@ -513,3 +513,50 @@ Codex was instructed to implement only workload reporting and ticket create-time
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, workload ordering rules, auto-assignment rules, audit expectations, and security behavior.
+
+## Step 12 — Auto-escalation Scheduler
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented automatic ticket escalation for unresolved overdue tickets with `dueDate` before the current time.
+- Preserved existing ticket creation and update behavior for optional `dueDate`.
+- Escalation applies only to non-deleted tickets whose status is not `DONE`.
+- Priority moves one level per cycle: `LOW` to `MEDIUM`, `MEDIUM` to `HIGH`, and `HIGH` to `CRITICAL`.
+- Tickets at `CRITICAL` are marked overdue when needed, and no further escalation happens after that.
+- Successful automatic changes write `AUTO_ESCALATE` audit records for `TICKET` with actor `SYSTEM`.
+
+### Engineering Intent
+
+- Keep escalation rules in `EscalationService` with a public `runEscalationCycle()` method for deterministic tests.
+- Enable scheduling through Spring scheduling with configurable delay properties.
+- Use an injectable `Clock` so tests can control the current time without relying on wall-clock timing.
+- Keep scheduler timing disabled in tests and trigger escalation directly.
+- Preserve the existing manual priority update behavior that clears `overdue` when priority changes.
+
+### Prompt Summary
+
+Codex was instructed to implement only the auto-escalation scheduler and service behavior while preserving existing ticket lifecycle, dependency blocker, soft-delete, CSV import/export, workload, auto-assignment, comments, mentions, attachments, auth, and audit behavior.
+
+### Key Design Decisions
+
+- Reuse `TicketRepository.findByDueDateBeforeAndStatusNotAndDeletedFalse(...)` for escalation candidates.
+- Use explicit priority transition logic instead of implicit enum ordering.
+- Apply at most one priority increase per escalation cycle.
+- Treat `CRITICAL` with `overdue=true` as an idempotent no-op and avoid duplicate audit records.
+- Do not add a manual escalation endpoint or a separate escalation history table.
+- Record only action, actor, entity type, and entity id in audit logs.
+
+### Scope Control
+
+- Final README documentation, architecture diagram updates, Swagger/OpenAPI, bootstrap data, smoke-test scripts, notification delivery, assignment emails, a new escalation history table, and manual trigger endpoints were not implemented in this step.
+
+### Validation and Testing
+
+- `AutoEscalationIntegrationTest` covers ignored tickets, one-step escalation, `CRITICAL` overdue handling, idempotent no-op behavior, status preservation, multiple cycles, manual priority reset behavior, and system audit records.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, scheduler behavior, idempotency expectations, audit expectations, and ticket update behavior.

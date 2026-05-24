@@ -22,3 +22,9 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
+issueflow:
+  escalation:
+    enabled: true
+    fixed-delay-ms: 60000
+    initial-delay-ms: 60000
