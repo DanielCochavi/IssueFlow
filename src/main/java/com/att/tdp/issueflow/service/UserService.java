@@ -55,6 +55,7 @@ public class UserService {
 		user.setEmail(email);
 		user.setFullName(normalize(request.fullName()));
 		user.setRole(request.role());
+		// User creation accepts a password so /auth/login can validate credentials; only the BCrypt hash is stored.
 		user.setPasswordHash(passwordEncoder.encode(request.password()));
 
 		return toResponse(userRepository.save(user));

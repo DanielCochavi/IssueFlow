@@ -78,6 +78,7 @@ public class ProjectService {
 	@Transactional
 	public void deleteProject(Long projectId) {
 		Project project = getActiveProject(projectId);
+		// Projects are soft-deleted per assignment requirements; normal reads exclude deleted rows.
 		project.setDeleted(true);
 		project.setDeletedAt(Instant.now());
 	}

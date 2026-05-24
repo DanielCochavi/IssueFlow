@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+	// Development-only signing secret for local assignment runs; externalize this before deployment.
 	private static final String DEV_ONLY_JWT_SECRET = "dev-only-need-to-change-before-deployment";
 
 	private static final long JWT_EXPIRATION_SECONDS = 3600;

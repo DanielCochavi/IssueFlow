@@ -29,6 +29,7 @@ Use `README.md` as the source of truth for assignment requirements and API behav
 ## README.md Change Policy
 
 - Do not edit `README.md` during normal implementation steps.
+- Codex may read `README.md`, but must not edit it unless a future prompt explicitly says the task is the final README documentation pass.
 - Do not update `README.md` with step-by-step progress such as "Step 2", "Step 3", "business logic not implemented yet", or similar temporary status notes.
 - Do not add manual test flows during feature implementation steps.
 - Do not add or update the architecture diagram during feature implementation steps.
@@ -36,6 +37,12 @@ Use `README.md` as the source of truth for assignment requirements and API behav
 - If `README.md` appears outdated during an implementation step, report it in the final summary instead of editing it.
 - Update `README.md` only in the final documentation step, or when setup/run commands or the public API contract truly changed.
 - Final README documentation work should include final setup/build/run/test instructions, one or two manual test flows, the final architecture diagram, and final notes aligned with implemented behavior.
+
+## Documentation Policy
+
+- Treat `prompts.md` as the professional engineering diary and AI usage record.
+- Treat `run.md` as the local setup/build/run/test runbook, not as an implementation diary.
+- Every implementation step should document assignment alignment, engineering intent, design decisions, scope control, tests, and ownership.
 
 ## Package Convention
 
@@ -87,6 +94,12 @@ com.att.tdp.issueflow.ticket.service.TicketService
 - Do not create domain subpackages under these layer packages.
 
 The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowApplication`.
+
+## Code Comment Policy
+
+- Use comments sparingly; prefer clear naming and small methods.
+- Add a 1-2 sentence comment only when it clarifies a non-obvious assignment rule, security decision, concurrency behavior, soft-delete/audit behavior, lifecycle rule, CSV parsing rule, auto-escalation rule, or auto-assignment rule.
+- Do not comment obvious CRUD code, simple DTOs, mapper assignments, repository method names, or self-explanatory controller methods.
 
 ## Working Guidelines
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenDenylistService {
 
+	// Logout uses an in-memory deny-list for this assignment stage; expired tokens are pruned opportunistically.
 	private final Map<String, Instant> denylistedTokens = new ConcurrentHashMap<>();
 
 	public void denylist(String token, Instant expiresAt) {

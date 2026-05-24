@@ -1,11 +1,10 @@
-# Run Guide
-
-IssueFlow is currently at **Step 1 — Clean Maven project skeleton**. The project builds as a single Spring Boot application, but API endpoints and business logic are not implemented yet.
+# IssueFlow – Ticket Management Backend Platform Run Guide
 
 ## Prerequisites
 
 - Java 21
 - Docker and Docker Compose
+- Maven wrapper included in this repository
 
 ## Start PostgreSQL
 
@@ -13,7 +12,9 @@ IssueFlow is currently at **Step 1 — Clean Maven project skeleton**. The proje
 docker compose up -d
 ```
 
-## Build and Test
+The local database uses the development-only credentials from `compose.yml` and `src/main/resources/application.yaml`.
+
+## Build
 
 ```bash
 ./mvnw clean verify
@@ -25,10 +26,75 @@ On Windows:
 mvnw.cmd clean verify
 ```
 
+## Run Tests
+
+```bash
+./mvnw test
+```
+
+For the same verification used before handoff:
+
+```bash
+./mvnw clean verify
+```
+
 ## Run the Application
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-No endpoints are implemented yet because this repository is at Step 1 only.
+The application runs on `http://localhost:8080`.
+
+## Local API Flow
+
+Create a user. `password` is accepted by the implementation so login can validate credentials.
+
+```bash
+curl -X POST http://localhost:8080/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "jdoe",
+    "email": "jdoe@example.com",
+    "fullName": "John Doe",
+    "role": "DEVELOPER",
+    "password": "secret"
+  }'
+```
+
+Login and copy the returned `accessToken`.
+
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{ "username": "jdoe", "password": "secret" }'
+```
+
+Call authenticated endpoints with `Authorization: Bearer <token>`.
+
+```bash
+curl http://localhost:8080/auth/me \
+  -H "Authorization: Bearer <token>"
+```
+
+Create a project using the created user's `id` as `ownerId`.
+
+```bash
+curl -X POST http://localhost:8080/projects \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sample Project",
+    "description": "A sample project",
+    "ownerId": 1
+  }'
+```
+
+Fetch active projects.
+
+```bash
+curl http://localhost:8080/projects \
+  -H "Authorization: Bearer <token>"
+```
+
+The local JWT signing secret is development-only and must be externalized before deployment.
