@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleOptimisticLock(
 			Exception exception,
 			HttpServletRequest request) {
-		return buildResponse(HttpStatus.CONFLICT, "Ticket was modified by another request", request);
+		return buildResponse(HttpStatus.CONFLICT, "Resource was modified by another request", request);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

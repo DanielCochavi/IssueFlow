@@ -321,3 +321,54 @@ Codex was instructed to implement dependency endpoints and enforce the DONE bloc
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, lifecycle rules, audit expectations, and security behavior.
+
+## Step 8 — Comments API and Mentions
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the Comment Management requirement from the assignment.
+- Matched the README Comments API contract for listing, adding, updating, and deleting comments.
+- Implemented the `@mention` mechanism required by the assignment.
+- Included mention metadata in comment responses through `mentionedUsers`.
+- Re-evaluated mention associations when comment content is updated.
+- Recorded audit logs for state-changing comment actions.
+- Preserved concurrent edit readiness through the existing optimistic-locking foundation.
+
+### Engineering Intent
+
+- Keep comment business rules in `CommentService`.
+- Use DTO request and response boundaries instead of exposing JPA entities.
+- Parse mentions with case-insensitive username matching.
+- Soft-delete comments and remove mention associations for deleted comments.
+- Integrate audit logging for comment add, update, and delete.
+- Keep optimistic-lock conflict handling generic for tickets, comments, and future entities.
+- Verify behavior with focused MockMvc integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement comments and mentions together because the README comment response includes `mentionedUsers` and the TDP requirements require mention metadata in each comment response.
+
+### Key Design Decisions
+
+- Reuse the existing `Comment` and `Mention` entities and repositories.
+- Ignore unknown `@username` values instead of failing the whole comment operation.
+- Deduplicate repeated mentions in the same comment.
+- Re-evaluate mention associations on comment update.
+- Remove mention associations when a comment is deleted.
+- Avoid storing comment content or mention text in audit logs.
+
+### Scope Control
+
+- Attachments, CSV import/export, workload, auto-assignment, and auto-escalation were not implemented in this step.
+- Mention delivery/notification side effects were limited to persisted association metadata for this backend assignment step.
+
+### Validation and Testing
+
+- `CommentIntegrationTest` covers comment CRUD, JWT protection, validation, soft delete visibility, mention parsing, case-insensitive matching, duplicate mention handling, unknown mention handling, mention pagination, mention update re-evaluation, mention cleanup on delete, and comment audit writes.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, mention rules, audit expectations, validation behavior, and security behavior.

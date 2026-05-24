@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.att.tdp.issueflow.repository.AuditLogRepository;
+import com.att.tdp.issueflow.repository.CommentRepository;
+import com.att.tdp.issueflow.repository.MentionRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
 import com.att.tdp.issueflow.repository.TicketDependencyRepository;
 import com.att.tdp.issueflow.repository.TicketRepository;
@@ -43,6 +45,12 @@ class AuditLogIntegrationTest {
 	private AuditLogRepository auditLogRepository;
 
 	@Autowired
+	private MentionRepository mentionRepository;
+
+	@Autowired
+	private CommentRepository commentRepository;
+
+	@Autowired
 	private TicketDependencyRepository ticketDependencyRepository;
 
 	@Autowired
@@ -57,6 +65,8 @@ class AuditLogIntegrationTest {
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		mentionRepository.deleteAll();
+		commentRepository.deleteAll();
 		ticketDependencyRepository.deleteAll();
 		ticketRepository.deleteAll();
 		projectRepository.deleteAll();

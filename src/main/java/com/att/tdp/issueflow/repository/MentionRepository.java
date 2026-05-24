@@ -8,6 +8,8 @@ import com.att.tdp.issueflow.entity.Mention;
 
 public interface MentionRepository extends JpaRepository<Mention, Long> {
 
+	List<Mention> findByCommentId(Long commentId);
+
 	List<Mention> findByMentionedUserIdOrderByCreatedAtDesc(Long userId);
 
 	void deleteByCommentId(Long commentId);

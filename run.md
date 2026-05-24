@@ -137,6 +137,25 @@ curl -X DELETE http://localhost:8080/tickets/1/dependencies/2 \
   -H "Authorization: Bearer <token>"
 ```
 
+Add and list comments for a ticket. Mentioned users are matched by `@username`.
+
+```bash
+curl -X POST http://localhost:8080/tickets/1/comments \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "authorId": 1, "content": "Please review this @jdoe" }'
+
+curl http://localhost:8080/tickets/1/comments \
+  -H "Authorization: Bearer <token>"
+```
+
+Fetch comments where a user was mentioned.
+
+```bash
+curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
+  -H "Authorization: Bearer <token>"
+```
+
 Fetch audit logs for recorded actions.
 
 ```bash
