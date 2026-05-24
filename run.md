@@ -97,6 +97,31 @@ curl http://localhost:8080/projects \
   -H "Authorization: Bearer <token>"
 ```
 
+Create a ticket for the project.
+
+```bash
+curl -X POST http://localhost:8080/tickets \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Fix login bug",
+    "description": "Login fails for valid users",
+    "status": "TODO",
+    "priority": "HIGH",
+    "type": "BUG",
+    "projectId": 1,
+    "assigneeId": 1,
+    "dueDate": "2026-04-01T00:00:00Z"
+  }'
+```
+
+Fetch active tickets for a project.
+
+```bash
+curl "http://localhost:8080/tickets?projectId=1" \
+  -H "Authorization: Bearer <token>"
+```
+
 Fetch audit logs for recorded user and project actions.
 
 ```bash

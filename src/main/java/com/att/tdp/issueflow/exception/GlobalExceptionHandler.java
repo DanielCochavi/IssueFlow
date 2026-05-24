@@ -3,6 +3,7 @@ package com.att.tdp.issueflow.exception;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
@@ -35,6 +37,13 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AuthorizationDeniedException.class)
 	public ResponseEntity<ErrorResponse> handleForbidden(AuthorizationDeniedException exception, HttpServletRequest request) {
 		return buildResponse(HttpStatus.FORBIDDEN, "Access denied", request);
+	}
+
+	@ExceptionHandler({ OptimisticLockingFailureException.class, OptimisticLockException.class })
+	public ResponseEntity<ErrorResponse> handleOptimisticLock(
+			Exception exception,
+			HttpServletRequest request) {
+		return buildResponse(HttpStatus.CONFLICT, "Ticket was modified by another request", request);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

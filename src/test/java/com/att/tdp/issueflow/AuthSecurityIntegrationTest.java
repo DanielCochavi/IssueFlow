@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.att.tdp.issueflow.repository.AuditLogRepository;
 import com.att.tdp.issueflow.repository.ProjectRepository;
+import com.att.tdp.issueflow.repository.TicketRepository;
 import com.att.tdp.issueflow.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,9 +42,13 @@ class AuthSecurityIntegrationTest {
 	@Autowired
 	private AuditLogRepository auditLogRepository;
 
+	@Autowired
+	private TicketRepository ticketRepository;
+
 	@BeforeEach
 	void clearData() {
 		auditLogRepository.deleteAll();
+		ticketRepository.deleteAll();
 		projectRepository.deleteAll();
 		userRepository.deleteAll();
 	}

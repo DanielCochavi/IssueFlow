@@ -216,3 +216,54 @@ Codex was instructed to implement the audit foundation before future ticket, com
 ### Ownership Note
 
 - The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, and audit traceability expectations.
+
+## Step 6 — Ticket API Core and Ticket Soft Delete
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Implemented the core Ticket Management requirement from the assignment.
+- Matched the README Ticket API contract for creating, reading, updating, and deleting tickets.
+- Implemented ticket soft-delete behavior, including deleted-ticket listing and restore endpoints.
+- Recorded audit logs for state-changing ticket operations.
+
+### Engineering Intent
+
+- Use DTO request and response boundaries for the Ticket API.
+- Keep ticket validation and lifecycle rules in `TicketService`.
+- Enforce forward-only ticket status transitions.
+- Preserve optimistic-locking readiness through the existing `@Version` field on `RecordBase`.
+- Implement ticket deletes as soft deletes with `deleted` and `deletedAt`.
+- Integrate audit logging for ticket create, update, delete, and restore.
+- Verify behavior through focused MockMvc integration tests.
+
+### Prompt Summary
+
+Codex was instructed to implement only core Ticket CRUD and ticket soft-delete/restore behavior while deferring dependencies, comments, attachments, import/export, workload, auto-assignment, and auto-escalation.
+
+### Key Design Decisions
+
+- Reuse the existing `Ticket` entity, `TicketRepository`, and ticket enums.
+- Validate that the referenced project exists and is active before ticket creation or project-scoped reads.
+- Validate an optional assignee when `assigneeId` is provided.
+- Allow tickets to remain unassigned when `assigneeId` is absent.
+- Require one-step forward status movement: `TODO` to `IN_PROGRESS` to `IN_REVIEW` to `DONE`.
+- Treat `DONE` tickets as immutable.
+- Clear the `overdue` flag when priority is manually changed for future escalation alignment.
+- Soft-delete tickets instead of physically deleting rows.
+- Audit every state-changing ticket operation.
+
+### Scope Control
+
+- Ticket dependencies, dependency-based DONE blocking, comments, mentions, attachments, CSV import/export, workload, auto-assignment, and auto-escalation were not implemented in this step.
+- The DONE transition does not yet check blockers because ticket dependencies are intentionally deferred.
+
+### Validation and Testing
+
+- `TicketControllerIntegrationTest` covers ticket creation and reads, project and assignee validation, partial updates, patch validation, lifecycle transition rules, DONE immutability, manual priority changes, soft delete and restore, ADMIN-only deleted/restore endpoints, audit writes, and JWT protection.
+- The implementation was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The implementation was reviewed against the TDP PDF requirements provided in the prompt, the README API contract, existing package conventions, audit expectations, validation behavior, and security behavior.
