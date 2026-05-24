@@ -19,7 +19,7 @@ Use this skill when implementing, testing, reviewing, or documenting IssueFlow b
 
 ## Project Shape
 
-IssueFlow is a Java 21 Spring Boot 3.4.2 backend using Maven, Spring Web, Spring Data JPA, Bean Validation, PostgreSQL for local/runtime persistence, H2 for tests, and Apache Commons CSV for ticket import/export.
+IssueFlow is a Java 21 Spring Boot 3.4.2 single Maven Spring Boot application. PostgreSQL is available through Docker Compose for local development, but Step 1 intentionally does not implement persistence, APIs, or business logic.
 
 Primary package:
 
@@ -27,7 +27,7 @@ Primary package:
 com.att.tdp.issueflow
 ```
 
-Current project entry point:
+Application entry point:
 
 ```text
 src/main/java/com/att/tdp/issueflow/IssueFlowApplication.java
@@ -62,10 +62,48 @@ The required functional areas include:
 - Auto-escalation
 - Auto-assignment
 
+## Package Convention
+
+Future generated code must follow flat package-by-layer automatically. Classes go directly inside the layer package.
+
+Correct:
+
+```text
+com.att.tdp.issueflow.controller.TicketController
+com.att.tdp.issueflow.service.TicketService
+com.att.tdp.issueflow.repository.TicketRepository
+com.att.tdp.issueflow.model.TicketEntity
+com.att.tdp.issueflow.dto.TicketResponse
+```
+
+Wrong:
+
+```text
+com.att.tdp.issueflow.controller.ticket.TicketController
+com.att.tdp.issueflow.service.ticket.TicketService
+com.att.tdp.issueflow.repository.ticket.TicketRepository
+com.att.tdp.issueflow.dto.ticket.TicketResponse
+com.att.tdp.issueflow.ticket.service.TicketService
+com.att.tdp.issueflow.ticket.dto.TicketResponse
+```
+
+The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowApplication`.
+
 ## Implementation Guidance
 
 - Keep REST controllers thin and move business rules into services.
+- Keep REST controllers in `com.att.tdp.issueflow.controller`.
+- Keep business logic in `com.att.tdp.issueflow.service`.
+- Keep repositories in `com.att.tdp.issueflow.repository`.
+- Keep JPA entities and domain models in `com.att.tdp.issueflow.model`.
+- Keep request and response DTOs in `com.att.tdp.issueflow.dto`.
+- Keep mappers in `com.att.tdp.issueflow.mapper`.
+- Keep configuration in `com.att.tdp.issueflow.config`.
+- Keep exceptions and handlers in `com.att.tdp.issueflow.exception`.
 - Use DTOs for request and response payloads rather than exposing JPA entities directly.
+- Do not expose JPA entities directly through controllers.
+- Do not create domain subpackages under these layer packages.
+- Do not place implementation classes directly under the root package or under domain-first packages.
 - Validate request bodies with Jakarta Bean Validation annotations.
 - Model missing resources and invalid state transitions with consistent error responses.
 - Prefer `PATCH` for partial updates where the README specifies it.
@@ -78,12 +116,12 @@ The required functional areas include:
 Use the Maven wrapper:
 
 ```bash
-./mvnw test
+./mvnw clean verify
 ```
 
 Add focused tests for new behavior. Prefer service-layer tests for business rules and Spring MVC tests or integration tests for endpoint contracts when API behavior changes.
 
-Use test configuration under:
+Test configuration lives under:
 
 ```text
 src/test/resources/application.yaml

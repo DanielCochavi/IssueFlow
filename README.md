@@ -8,6 +8,17 @@
 IssueFlow is a backend service designed to handle a lightweight project and issue tracking platform.
 The system manages users, projects, tickets (issues), comments on tickets, audit logs, ticket dependencies, attachments, and bulk ticket import/export.
 
+## Current Implementation Stage
+
+This repository is currently at **Step 1 — Clean Maven project skeleton**.
+
+- Java 21
+- Spring Boot 3.4.2
+- Single Maven Spring Boot application
+- PostgreSQL via Docker Compose for local development
+- No Swagger/OpenAPI in the current design
+- No business logic implemented yet
+
 ## Functionality
 The system provides the following APIs:
 
@@ -25,7 +36,7 @@ The system provides the following APIs:
 - **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER in the project.
 
 ## Technical Aspects
-The system is built using Java 21 or Java 25 with Spring Boot 3 or Spring Boot 4, leveraging its robust framework for creating RESTful APIs. Data persistence is managed using PostgreSQL via Spring Data JPA (Hibernate).
+The system is built as a Java 21, Spring Boot 3.4.2, Maven backend. PostgreSQL is provided through Docker Compose for local development. Step 1 defines the application skeleton only; persistence, APIs, and business behavior are intentionally deferred to later implementation steps.
 
 ## Homework Task
 Candidates are expected to design and implement the above APIs, adhering to RESTful principles, including input validation, proper error handling, and relevant tests.
@@ -156,19 +167,19 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 ---
 
 ## Jump Start
-For your convenience, `compose.yml` includes a PostgreSQL DB and the app is already configured to connect to it.
+For your convenience, `compose.yml` includes a PostgreSQL database for local development.
 
 Document your exact setup, build, and run steps in `run.md` (install dependencies, start the database, build the project, run the application, and run the tests).
 
 ## Description
 
-[Spring Boot](https://spring.io/projects/spring-boot) Java starter project. Supports **Java 21** or **Java 25** with **Spring Boot 3** or **Spring Boot 4**.
+[Spring Boot](https://spring.io/projects/spring-boot) Java starter project. Supports **Java 21** with **Spring Boot 3.4.2**.
 
 ## Build
 
 ```bash
 # using Maven wrapper
-$ ./mvnw clean package
+$ ./mvnw clean verify
 ```
 
 ## Running the app
@@ -176,16 +187,13 @@ $ ./mvnw clean package
 ```bash
 # run with Maven
 $ ./mvnw spring-boot:run
-
-# run the packaged jar
-$ java -jar target/issueflow-*.jar
 ```
 
 ## Test
 
 ```bash
 # run all tests (Maven)
-$ ./mvnw test
+$ ./mvnw clean verify
 ```
 
 ## AI & Agents

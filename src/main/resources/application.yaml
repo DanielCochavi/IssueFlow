@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/issueflow
     username: issueflow
-    password: issueflow
+    password: dev-only-need-to-change-before-deployment
     driverClassName: org.postgresql.Driver
     platform: postgres
   jpa:
