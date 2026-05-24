@@ -72,7 +72,8 @@ Correct:
 com.att.tdp.issueflow.controller.TicketController
 com.att.tdp.issueflow.service.TicketService
 com.att.tdp.issueflow.repository.TicketRepository
-com.att.tdp.issueflow.model.TicketEntity
+com.att.tdp.issueflow.entity.Ticket
+com.att.tdp.issueflow.enums.TicketStatus
 com.att.tdp.issueflow.dto.TicketResponse
 ```
 
@@ -95,7 +96,8 @@ The Spring Boot application entry point is `com.att.tdp.issueflow.IssueFlowAppli
 - Keep REST controllers in `com.att.tdp.issueflow.controller`.
 - Keep business logic in `com.att.tdp.issueflow.service`.
 - Keep repositories in `com.att.tdp.issueflow.repository`.
-- Keep JPA entities and domain models in `com.att.tdp.issueflow.model`.
+- Keep JPA entities in `com.att.tdp.issueflow.entity`.
+- Keep enums in `com.att.tdp.issueflow.enums`.
 - Keep request and response DTOs in `com.att.tdp.issueflow.dto`.
 - Keep mappers in `com.att.tdp.issueflow.mapper`.
 - Keep configuration in `com.att.tdp.issueflow.config`.

@@ -42,7 +42,8 @@ Correct examples:
 com.att.tdp.issueflow.controller.TicketController
 com.att.tdp.issueflow.service.TicketService
 com.att.tdp.issueflow.repository.TicketRepository
-com.att.tdp.issueflow.model.TicketEntity
+com.att.tdp.issueflow.entity.Ticket
+com.att.tdp.issueflow.enums.TicketStatus
 com.att.tdp.issueflow.dto.TicketResponse
 ```
 
@@ -65,7 +66,8 @@ com.att.tdp.issueflow.ticket.service.TicketService
 - REST controllers belong in `com.att.tdp.issueflow.controller`.
 - Business services belong in `com.att.tdp.issueflow.service`.
 - Spring Data repositories belong in `com.att.tdp.issueflow.repository`.
-- JPA entities and domain models belong in `com.att.tdp.issueflow.model`.
+- JPA entities belong in `com.att.tdp.issueflow.entity`.
+- Enums belong in `com.att.tdp.issueflow.enums`.
 - Request and response DTOs belong in `com.att.tdp.issueflow.dto`.
 - Mappers belong in `com.att.tdp.issueflow.mapper`.
 - Configuration classes belong in `com.att.tdp.issueflow.config`.
