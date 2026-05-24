@@ -25,7 +25,7 @@ The system provides the following APIs:
 - **Auto-Assignment**: Tickets without an explicit assignee are automatically assigned to the least-loaded DEVELOPER by project workload.
 
 ## Technical Aspects
-The system is built using Java 21 or Java 25 with Spring Boot 3 or Spring Boot 4, leveraging its robust framework for creating RESTful APIs. Data persistence is managed using PostgreSQL via Spring Data JPA (Hibernate).
+The system is built as a Java 21, Spring Boot 3.4.2 Maven backend. It uses Spring Web for REST APIs, Spring Security with JWT bearer tokens, Spring Data JPA/Hibernate for persistence, PostgreSQL for local development, Jakarta Bean Validation for request validation, centralized JSON error handling, and focused automated tests.
 
 ## Project System Design Diagram
 
@@ -34,6 +34,15 @@ The system is built using Java 21 or Java 25 with Spring Boot 3 or Spring Boot 4
 The diagram shows microservices-style logical architecture implemented inside a single Spring Boot application. Client/UI calls the backend through JWT-authenticated REST APIs. The Spring Boot backend contains logical modules for auth, users, projects, tickets, comments, audit logs, dependencies, attachments, workload, auto-assignment, CSV import/export, mentions, and auto-escalation.
 
 PostgreSQL stores all application data, including users, projects, tickets, comments, mentions, dependencies, attachments, and audit logs. The escalation scheduler runs inside the application and updates overdue tickets. Auto-assignment runs during ticket creation when `assigneeId` is omitted. The API tables below remain authoritative for the exposed REST endpoints.
+
+## Swagger / OpenAPI
+
+Swagger is available after starting the application locally:
+
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
+Protected endpoints still require a JWT bearer token. Use the Swagger UI authorization control or send `Authorization: Bearer <token>` when calling protected APIs.
 
 ---
 
@@ -190,15 +199,19 @@ Run the application:
 
 ```bash
 ./mvnw spring-boot:run
-
-# run the packaged jar
-$ java -jar target/issueflow-*.jar
 ```
+
+Run the packaged jar:
+
+```bash
+java -jar target/issueflow-*.jar
+```
+
 Test the application:
 
 ```bash
 # run all tests (Maven)
-$ ./mvnw test
+./mvnw test
 ```
 
 Stop PostgreSQL:
@@ -207,71 +220,97 @@ Stop PostgreSQL:
 docker compose down
 ```
 
-## Manual Test Flows
+## Example Functionality Test Flows
 
 The examples below assume the application is running on `http://localhost:8080`.
 
-### Flow 1: Auth, Project, Ticket
-
-Create a user:
-
 ```bash
-curl -X POST http://localhost:8080/users \
-  -H "Content-Type: application/json" \
-  -d '{"username":"jdoe","email":"jdoe@example.com","fullName":"John Doe","role":"DEVELOPER","password":"secret"}'
+BASE_URL=http://localhost:8080
+TOKEN="<paste-token-here>"
+USER_ID=1
+PROJECT_ID=1
+TICKET_ID=1
+BLOCKER_TICKET_ID=2
 ```
 
-Login and set the returned token:
+### Example User Login Test Flow
+
+Purpose: create a user, login, and call the current-user endpoint with a JWT.
 
 ```bash
-curl -X POST http://localhost:8080/auth/login \
+curl -X POST "$BASE_URL/users" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"jdoe","email":"jdoe@example.com","fullName":"John Doe","role":"DEVELOPER","password":"secret"}'
+
+curl -X POST "$BASE_URL/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"username":"jdoe","password":"secret"}'
 
-TOKEN="<accessToken from login>"
-```
+TOKEN="<paste-accessToken-from-login>"
 
-Create a project and ticket:
-
-```bash
-curl -X POST http://localhost:8080/projects \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Sample Project","description":"A sample project","ownerId":1}'
-
-curl -X POST http://localhost:8080/tickets \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Fix login bug","description":"Login fails for valid users","status":"TODO","priority":"HIGH","type":"BUG","projectId":1,"dueDate":"2026-04-01T00:00:00Z"}'
-```
-
-Fetch tickets for the project:
-
-```bash
-curl "http://localhost:8080/tickets?projectId=1" \
+curl "$BASE_URL/auth/me" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-### Flow 2: Comment Mention and CSV Export
+### Example Project and Ticket Lifecycle Flow
 
-Add a comment with a mention and fetch mentions:
+Purpose: create a project, create a ticket, move it forward one lifecycle step, and fetch project tickets.
+
+Ticket status only moves forward: `TODO -> IN_PROGRESS -> IN_REVIEW -> DONE`.
 
 ```bash
-curl -X POST http://localhost:8080/tickets/1/comments \
+curl -X POST "$BASE_URL/projects" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"authorId":1,"content":"Please review this @jdoe"}'
+  -d "{\"name\":\"Sample Project\",\"description\":\"A sample project\",\"ownerId\":$USER_ID}"
 
-curl "http://localhost:8080/users/1/mentions?page=1&pageSize=20" \
+curl -X POST "$BASE_URL/tickets" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"Fix login bug\",\"description\":\"Login fails for valid users\",\"status\":\"TODO\",\"priority\":\"HIGH\",\"type\":\"BUG\",\"projectId\":$PROJECT_ID,\"dueDate\":\"2026-04-01T00:00:00Z\"}"
+
+curl -X PATCH "$BASE_URL/tickets/$TICKET_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"IN_PROGRESS"}'
+
+curl "$BASE_URL/tickets?projectId=$PROJECT_ID" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Export project tickets to CSV:
+### Example Collaboration and Extended Features Flow
+
+Purpose: add a comment with an `@username` mention, view mentions, add a blocker dependency, and inspect audit logs.
 
 ```bash
-curl "http://localhost:8080/tickets/export?projectId=1" \
+curl -X POST "$BASE_URL/tickets/$TICKET_ID/comments" \
   -H "Authorization: Bearer $TOKEN" \
-  -o tickets-project-1.csv
+  -H "Content-Type: application/json" \
+  -d "{\"authorId\":$USER_ID,\"content\":\"Please review this @jdoe\"}"
+
+curl "$BASE_URL/users/$USER_ID/mentions?page=1&pageSize=20" \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -X POST "$BASE_URL/tickets/$TICKET_ID/dependencies" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"blockedBy\":$BLOCKER_TICKET_ID}"
+
+curl "$BASE_URL/audit-logs?entityType=TICKET" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Compact CSV export/import examples:
+
+```bash
+curl "$BASE_URL/tickets/export?projectId=$PROJECT_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -o tickets-project.csv
+
+curl -X POST "$BASE_URL/tickets/import" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "projectId=$PROJECT_ID" \
+  -F "file=@./tickets-project.csv;type=text/csv"
 ```
 
 ## AI & Agents
@@ -279,6 +318,30 @@ curl "http://localhost:8080/tickets/export?projectId=1" \
 We encourage you to use AI during the process. Document how you used the agent and add all relevant files (skills, instructions, plan, etc.).
 
 Add the main and relevant prompts that show your interaction with the agents in a `prompts.md` file.
+
+---
+
+## Error Format
+
+Most API errors return a consistent JSON body with these fields:
+
+- `timestamp`: ISO-8601 timestamp of the error
+- `status`: HTTP status code
+- `error`: HTTP reason phrase
+- `message`: human-readable error message
+- `path`: request path that failed
+
+Example:
+
+```json
+{
+  "timestamp": "2026-05-24T12:00:00Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "title: must not be blank",
+  "path": "/tickets"
+}
+```
 
 ---
 

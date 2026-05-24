@@ -52,6 +52,13 @@ The API runs at:
 http://localhost:8080
 ```
 
+Useful local URLs:
+
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
+Protected endpoints still require `Authorization: Bearer <token>`.
+
 ## Configuration Notes
 
 - Production profile management is not part of this assignment repository.

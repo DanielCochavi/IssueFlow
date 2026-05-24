@@ -604,3 +604,43 @@ Codex was instructed to finalize repository documentation, add the approved `Iss
 ### Ownership Note
 
 - The final documentation was reviewed against the TDP assignment guardrails provided in the prompt, the README API contract, existing package conventions, generated prompt history, local runbook expectations, and repository submission requirements.
+
+## Step 14 — Swagger Documentation and Functionality Flows
+
+Model used: GPT-5.5 Thinking.
+
+### Assignment Alignment
+
+- Updated final README documentation with local Swagger UI and OpenAPI JSON access information.
+- Replaced the generic example flow documentation with functionality-oriented curl flows for user login, project/ticket lifecycle behavior, collaboration features, audit logs, and compact CSV export/import.
+- Kept protected business endpoints JWT-protected while allowing only Swagger/OpenAPI documentation endpoints to be public.
+
+### Engineering Intent
+
+- Add the minimal Springdoc setup needed to make the documented Swagger URLs real.
+- Keep README examples practical without duplicating the full API table.
+- Keep `run.md` focused as a local runbook with useful URLs rather than an implementation diary.
+- Verify documentation endpoint access and JWT protection with a focused integration test.
+
+### Prompt Summary
+
+Codex was instructed to check whether Swagger/OpenAPI already worked, add the minimal working setup if missing, document the URLs, replace the README example section with clear curl flows, and preserve existing business behavior.
+
+### Key Design Decisions
+
+- Added `springdoc-openapi-starter-webmvc-ui` because Swagger/OpenAPI was not previously enabled.
+- Permitted `/swagger-ui/**`, `/swagger-ui.html`, and `/v3/api-docs/**` through Spring Security without opening protected business APIs.
+- Added a small MockMvc test to verify Swagger/OpenAPI access and that `/users` still requires authentication.
+
+### Scope Control
+
+- No new business endpoints, seed data, bootstrap scripts, smoke-test scripts, package restructuring, or assignment behavior changes were introduced.
+
+### Validation and Testing
+
+- `SwaggerAccessIntegrationTest` verifies public Swagger/OpenAPI endpoints and continued JWT protection for a business endpoint.
+- The repository was verified with `./mvnw clean verify`.
+
+### Ownership Note
+
+- The changes were reviewed against the README API contract, current security model, local runbook expectations, Springdoc documentation behavior, and assignment constraints.

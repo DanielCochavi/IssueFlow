@@ -74,6 +74,7 @@ public class SecurityConfig {
 							"{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access denied\"}");
 				}))
 			.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 				.requestMatchers(HttpMethod.POST, "/auth/login", "/users").permitAll()
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
