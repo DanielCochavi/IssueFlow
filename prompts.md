@@ -1,5 +1,7 @@
 # Prompts
 
+This file documents the main AI-assisted development steps used for the IssueFlow assignment. Each section records the model used, assignment alignment, engineering intent, scope boundaries, validation, and ownership notes. The implementation was reviewed and remains the author’s responsibility.
+
 ## Step 1 — Clean Maven Project Skeleton
 
 Model used: GPT-5.5 Thinking.
