@@ -50,6 +50,8 @@ public class ProjectService {
 
 	@Transactional
 	public ProjectResponse createProject(CreateProjectRequest request) {
+		// Assignment contract: create-project accepts ownerId in the request body.
+		// In production, ownership and authorization should usually come from the authenticated JWT context.
 		User owner = userRepository.findById(request.ownerId())
 			.orElseThrow(() -> new ResourceNotFoundException("Owner user not found"));
 

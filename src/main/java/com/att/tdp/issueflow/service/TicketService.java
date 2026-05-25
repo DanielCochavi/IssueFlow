@@ -68,6 +68,8 @@ public class TicketService {
 	@Transactional
 	public TicketResponse createTicket(CreateTicketRequest request) {
 		Project project = getActiveProject(request.projectId());
+		// Assignment contract: ticket creation accepts assigneeId in the request body.
+		// In production, assignment permissions should usually be checked against the authenticated JWT context.
 		boolean autoAssigned = request.assigneeId() == null;
 		User assignee = autoAssigned
 				? workloadService.findLeastLoadedDeveloper(project.getId()).orElse(null)
@@ -132,6 +134,8 @@ public class TicketService {
 		}
 
 		if (request.assigneeId() != null) {
+			// Assignment contract: ticket updates accept assigneeId in the request body.
+			// Production authorization should usually validate this against the authenticated JWT context.
 			ticket.setAssignee(getRequiredAssignee(request.assigneeId()));
 		}
 

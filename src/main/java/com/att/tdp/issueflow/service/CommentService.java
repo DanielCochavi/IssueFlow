@@ -74,6 +74,8 @@ public class CommentService {
 	@Transactional
 	public CommentResponse addComment(Long ticketId, AddCommentRequest request) {
 		Ticket ticket = getActiveTicket(ticketId);
+		// Assignment contract: add-comment accepts authorId in the request body.
+		// In production, authorship should usually come from the authenticated JWT context.
 		User author = userRepository.findById(request.authorId())
 			.orElseThrow(() -> new ResourceNotFoundException("Author user not found"));
 		String content = normalizeContent(request.content());
