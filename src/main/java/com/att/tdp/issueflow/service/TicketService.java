@@ -167,6 +167,9 @@ public class TicketService {
 	}
 
 	private Ticket getActiveTicket(Long ticketId) {
+		// Business assumption: project and ticket soft-delete states are independent.
+		// A ticket is hidden only when the ticket itself is soft-deleted; soft-deleting a project
+		// does not hide or soft-delete existing tickets.
 		return ticketRepository.findById(ticketId)
 			.filter(ticket -> !ticket.isDeleted())
 			.orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
