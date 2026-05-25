@@ -220,6 +220,11 @@ docker compose down
 
 The examples below show common curl-based flows for using the main IssueFlow APIs after the application is running.
 
+### Variables Used in the Curl Examples
+
+The following variables are optional helpers for running the curl examples from a terminal.
+They are not application configuration.
+
 ```bash
 BASE_URL=http://localhost:8080
 TOKEN="<paste-token-here>"
@@ -228,6 +233,24 @@ PROJECT_ID=1
 TICKET_ID=1
 BLOCKER_TICKET_ID=2
 ```
+
+### Example Curl After Variable Replacement
+
+Command using variables:
+
+```bash
+curl -X GET "$BASE_URL/projects/$PROJECT_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Same command after replacing the example variables:
+
+```bash
+curl -X GET "http://localhost:8080/projects/1" \
+  -H "Authorization: Bearer <paste-token-here>"
+```
+
+In this example, `$BASE_URL` becomes `http://localhost:8080`, `$PROJECT_ID` becomes `1`, and `$TOKEN` becomes `<paste-token-here>`.
 
 ### User Registration and Login Flow
 
