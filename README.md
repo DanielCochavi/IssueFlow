@@ -171,9 +171,7 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 
 ## Implementation Notes
 
-- `POST /users` accepts `password` so the authentication flow can validate `POST /auth/login`. Passwords are stored only as BCrypt hashes and are never returned in responses.
 - The application uses a stateless JWT security model. `POST /users` and `POST /auth/login` are public; all other endpoints require `Authorization: Bearer <token>`.
-- Projects and tickets use soft delete. Standard read endpoints hide deleted records, and restore/list-deleted endpoints are ADMIN-only.
 - Ticket lifecycle is forward-only: `TODO -> IN_PROGRESS -> IN_REVIEW -> DONE`. DONE tickets cannot be updated, and a ticket cannot move to DONE while it has unresolved blockers.
 - Audit logs are persisted for state-changing user, project, ticket, dependency, comment, attachment, import, auto-assignment, and auto-escalation actions.
 - There is no separate project membership model. Workload and auto-assignment consider all users with role `DEVELOPER`, counting their non-deleted, non-DONE tickets in the requested project.
