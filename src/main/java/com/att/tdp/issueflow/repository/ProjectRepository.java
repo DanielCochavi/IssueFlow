@@ -11,4 +11,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	List<Project> findByDeletedFalse();
 
 	List<Project> findByDeletedTrue();
+
+	boolean existsByOwnerId(Long ownerId);
 }

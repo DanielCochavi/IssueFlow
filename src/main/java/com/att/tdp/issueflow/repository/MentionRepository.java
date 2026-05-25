@@ -12,5 +12,7 @@ public interface MentionRepository extends JpaRepository<Mention, Long> {
 
 	List<Mention> findByMentionedUserIdOrderByCreatedAtDesc(Long userId);
 
+	boolean existsByMentionedUserId(Long mentionedUserId);
+
 	void deleteByCommentId(Long commentId);
 }

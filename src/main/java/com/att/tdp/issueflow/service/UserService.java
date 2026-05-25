@@ -14,13 +14,28 @@ import com.att.tdp.issueflow.enums.AuditAction;
 import com.att.tdp.issueflow.enums.AuditEntityType;
 import com.att.tdp.issueflow.exception.BadRequestException;
 import com.att.tdp.issueflow.exception.ResourceNotFoundException;
+import com.att.tdp.issueflow.repository.CommentRepository;
+import com.att.tdp.issueflow.repository.MentionRepository;
+import com.att.tdp.issueflow.repository.ProjectRepository;
+import com.att.tdp.issueflow.repository.TicketRepository;
 import com.att.tdp.issueflow.repository.UserRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class UserService {
 
+	private static final String REFERENCED_USER_DELETE_MESSAGE =
+			"User cannot be deleted because it is referenced by existing projects, tickets, comments, or mentions";
+
 	private final UserRepository userRepository;
+
+	private final ProjectRepository projectRepository;
+
+	private final TicketRepository ticketRepository;
+
+	private final CommentRepository commentRepository;
+
+	private final MentionRepository mentionRepository;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -28,9 +43,17 @@ public class UserService {
 
 	public UserService(
 			UserRepository userRepository,
+			ProjectRepository projectRepository,
+			TicketRepository ticketRepository,
+			CommentRepository commentRepository,
+			MentionRepository mentionRepository,
 			PasswordEncoder passwordEncoder,
 			AuditLogService auditLogService) {
 		this.userRepository = userRepository;
+		this.projectRepository = projectRepository;
+		this.ticketRepository = ticketRepository;
+		this.commentRepository = commentRepository;
+		this.mentionRepository = mentionRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.auditLogService = auditLogService;
 	}
@@ -86,6 +109,7 @@ public class UserService {
 	@Transactional
 	public void deleteUser(Long userId) {
 		User user = getRequiredUser(userId);
+		validateUserCanBeDeleted(user.getId());
 		auditLogService.recordCurrentUserAction(AuditAction.DELETE, AuditEntityType.USER, user.getId());
 		userRepository.delete(user);
 	}
@@ -107,6 +131,17 @@ public class UserService {
 	private User getRequiredUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+	}
+
+	private void validateUserCanBeDeleted(Long userId) {
+		// Business assumption: users are hard-deleted only when they are not referenced by business records.
+		// Referenced users are kept to preserve project, ticket, comment, and mention history.
+		if (projectRepository.existsByOwnerId(userId)
+				|| ticketRepository.existsByAssigneeId(userId)
+				|| commentRepository.existsByAuthorId(userId)
+				|| mentionRepository.existsByMentionedUserId(userId)) {
+			throw new BadRequestException(REFERENCED_USER_DELETE_MESSAGE);
+		}
 	}
 
 	private String normalize(String value) {

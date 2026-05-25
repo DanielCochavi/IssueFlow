@@ -14,4 +14,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	Optional<Comment> findByIdAndTicketIdAndDeletedFalse(Long id, Long ticketId);
 
 	List<Comment> findByTicketIdAndDeletedFalseOrderByCreatedAtAsc(Long ticketId);
+
+	boolean existsByAuthorId(Long authorId);
 }

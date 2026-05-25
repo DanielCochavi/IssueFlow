@@ -20,4 +20,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 			TicketStatus status);
 
 	List<Ticket> findByDueDateBeforeAndStatusNotAndDeletedFalse(Instant now, TicketStatus status);
+
+	boolean existsByAssigneeId(Long assigneeId);
 }
