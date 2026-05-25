@@ -52,6 +52,8 @@ public class WorkloadService {
 	}
 
 	private List<DeveloperWorkload> rankedDeveloperWorkloads(Long projectId) {
+		// Business assumption: the assignment does not define a separate project-membership model, so all DEVELOPER users are candidates.
+		// Workload is still project-scoped by counting each developer's non-DONE tickets only within the requested project; ADMIN users are excluded.
 		return userRepository.findByRoleOrderByCreatedAtAsc(Role.DEVELOPER)
 			.stream()
 			.map(user -> new DeveloperWorkload(

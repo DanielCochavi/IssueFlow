@@ -174,8 +174,8 @@ Tickets and projects support **soft delete** only — deleted records are hidden
 - The application uses a stateless JWT security model. `POST /users` and `POST /auth/login` are public; all other endpoints require `Authorization: Bearer <token>`.
 - Ticket lifecycle is forward-only: `TODO -> IN_PROGRESS -> IN_REVIEW -> DONE`. DONE tickets cannot be updated, and a ticket cannot move to DONE while it has unresolved blockers.
 - Audit logs are persisted for state-changing user, project, ticket, dependency, comment, attachment, import, auto-assignment, and auto-escalation actions.
-- There is no separate project membership model. Workload and auto-assignment consider all users with role `DEVELOPER`, counting their non-deleted, non-DONE tickets in the requested project.
 - The auto-escalation scheduler runs in the application. It escalates overdue unresolved tickets one priority level per cycle and marks CRITICAL overdue tickets with `isOverdue=true`.
+- The local PostgreSQL password and JWT signing secret are development-only placeholders used to keep the assignment easy to run out of the box. For production, these values must be externalized through environment variables or a secrets manager and replaced with strong, environment-specific secrets.
 
 ## Running Locally
 
