@@ -357,9 +357,3 @@ Example:
   "path": "/tickets"
 }
 ```
-
----
-
-## License
-
-This project is [MIT licensed](LICENSE).
